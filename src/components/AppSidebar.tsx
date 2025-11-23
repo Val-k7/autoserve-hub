@@ -1,6 +1,7 @@
-import { Link, useLocation } from 'react-router-dom';
-import { useAuth } from '@/contexts/AuthContext';
-import { useTheme } from '@/contexts/ThemeContext';
+import { useState, useEffect } from "react";
+import { Link, useLocation } from "react-router-dom";
+import { useAuth } from "@/contexts/AuthContext";
+import { useTheme } from "@/contexts/ThemeContext";
 import {
   Home,
   LayoutDashboard,
@@ -13,8 +14,11 @@ import {
   Sun,
   LogOut,
   ChevronRight,
-  Sparkles
-} from 'lucide-react';
+  Sparkles,
+  Activity,
+  AlertCircle,
+  CheckCircle2,
+} from "lucide-react";
 import {
   Sidebar,
   SidebarContent,
@@ -27,23 +31,34 @@ import {
   useSidebar,
   SidebarFooter,
   SidebarHeader,
-} from '@/components/ui/sidebar';
-import { Button } from '@/components/ui/button';
-import { Separator } from '@/components/ui/separator';
-import { useNavigate } from 'react-router-dom';
-import { useToast } from '@/hooks/use-toast';
+} from "@/components/ui/sidebar";
+import { Button } from "@/components/ui/button";
+import { Separator } from "@/components/ui/separator";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { useNavigate } from "react-router-dom";
+import { useToast } from "@/hooks/use-toast";
 
 const mainItems = [
-  { title: 'Accueil', url: '/', icon: Home },
-  { title: 'Dashboard', url: '/dashboard', icon: LayoutDashboard },
-  { title: 'Catalogue', url: '/catalog', icon: Store },
-  { title: 'Logs', url: '/logs', icon: ScrollText },
+  { title: "Accueil", url: "/", icon: Home },
+  { title: "Dashboard", url: "/dashboard", icon: LayoutDashboard },
+  { title: "Catalogue", url: "/catalog", icon: Store },
+  { title: "Logs", url: "/logs", icon: ScrollText },
 ];
 
 const adminItems = [
-  { title: 'Utilisateurs', url: '/users', icon: Users },
-  { title: 'Configuration', url: '/settings', icon: Settings },
+  { title: "Utilisateurs", url: "/users", icon: Users },
+  { title: "Configuration", url: "/settings", icon: Settings },
 ];
+
+type SystemStatus = "operational" | "warning" | "error";
+
+interface SystemMetrics {
+  status: SystemStatus;
+  uptime: string;
+  activeUsers: number;
+  activeApps: number;
+  lastCheck: Date;
+}
 
 export function AppSidebar() {
   const { state } = useSidebar();
@@ -52,17 +67,44 @@ export function AppSidebar() {
   const { theme, toggleTheme } = useTheme();
   const navigate = useNavigate();
   const { toast } = useToast();
-  const isCollapsed = state === 'collapsed';
+  const isCollapsed = state === "collapsed";
+
+  const [systemMetrics, setSystemMetrics] = useState<SystemMetrics>({
+    status: "operational",
+    uptime: "99.9%",
+    activeUsers: 12,
+    activeApps: 8,
+    lastCheck: new Date(),
+  });
+
+  // Simulate system checks
+  useEffect(() => {
+    const interval = setInterval(() => {
+      const random = Math.random();
+      let newStatus: SystemStatus = "operational";
+
+      if (random < 0.05) newStatus = "error";
+      else if (random < 0.2) newStatus = "warning";
+
+      setSystemMetrics((prev) => ({
+        ...prev,
+        status: newStatus,
+        lastCheck: new Date(),
+      }));
+    }, 10000);
+
+    return () => clearInterval(interval);
+  }, []);
 
   const isActive = (path: string) => location.pathname === path;
 
   const handleLogout = () => {
     logout();
     toast({
-      title: 'Déconnecté',
-      description: 'À bientôt !',
+      title: "Déconnecté",
+      description: "À bientôt !",
     });
-    navigate('/login');
+    navigate("/login");
   };
 
   return (
@@ -98,28 +140,24 @@ export function AppSidebar() {
                     tooltip={isCollapsed ? item.title : undefined}
                     className={`
                       group relative overflow-hidden transition-all duration-300
-                      ${isActive(item.url) 
-                        ? 'bg-gradient-to-r from-primary/15 to-accent/15 text-primary shadow-md border border-primary/20' 
-                        : 'hover:bg-accent/10 hover:translate-x-1'
+                      ${
+                        isActive(item.url)
+                          ? "bg-gradient-to-r from-primary/15 to-accent/15 text-primary shadow-md border border-primary/20"
+                          : "hover:bg-accent/10 hover:translate-x-1"
                       }
                     `}
                   >
                     <Link to={item.url} className="flex items-center gap-3 w-full">
-                      <div className={`
+                      <div
+                        className={`
                         p-1.5 rounded-lg transition-all duration-300
-                        ${isActive(item.url) 
-                          ? 'bg-primary/20 text-primary' 
-                          : 'group-hover:bg-accent/20'
-                        }
-                      `}>
+                        ${isActive(item.url) ? "bg-primary/20 text-primary" : "group-hover:bg-accent/20"}
+                      `}
+                      >
                         <item.icon className="h-4 w-4" />
                       </div>
-                      {!isCollapsed && (
-                        <span className="font-medium">{item.title}</span>
-                      )}
-                      {!isCollapsed && isActive(item.url) && (
-                        <ChevronRight className="h-4 w-4 ml-auto text-primary" />
-                      )}
+                      {!isCollapsed && <span className="font-medium">{item.title}</span>}
+                      {!isCollapsed && isActive(item.url) && <ChevronRight className="h-4 w-4 ml-auto text-primary" />}
                     </Link>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
@@ -145,28 +183,24 @@ export function AppSidebar() {
                         tooltip={isCollapsed ? item.title : undefined}
                         className={`
                           group relative overflow-hidden transition-all duration-300
-                          ${isActive(item.url) 
-                            ? 'bg-gradient-to-r from-primary/15 to-accent/15 text-primary shadow-md border border-primary/20' 
-                            : 'hover:bg-accent/10 hover:translate-x-1'
+                          ${
+                            isActive(item.url)
+                              ? "bg-gradient-to-r from-primary/15 to-accent/15 text-primary shadow-md border border-primary/20"
+                              : "hover:bg-accent/10 hover:translate-x-1"
                           }
                         `}
                       >
                         <Link to={item.url} className="flex items-center gap-3 w-full">
-                          <div className={`
+                          <div
+                            className={`
                             p-1.5 rounded-lg transition-all duration-300
-                            ${isActive(item.url) 
-                              ? 'bg-primary/20 text-primary' 
-                              : 'group-hover:bg-accent/20'
-                            }
-                          `}>
+                            ${isActive(item.url) ? "bg-primary/20 text-primary" : "group-hover:bg-accent/20"}
+                          `}
+                          >
                             <item.icon className="h-4 w-4" />
                           </div>
-                          {!isCollapsed && (
-                            <span className="font-medium">{item.title}</span>
-                          )}
-                          {!isCollapsed && isActive(item.url) && (
-                            <ChevronRight className="h-4 w-4 ml-auto text-primary" />
-                          )}
+                          {!isCollapsed && <span className="font-medium">{item.title}</span>}
+                          {!isCollapsed && isActive(item.url) && <ChevronRight className="h-4 w-4 ml-auto text-primary" />}
                         </Link>
                       </SidebarMenuButton>
                     </SidebarMenuItem>
@@ -180,30 +214,92 @@ export function AppSidebar() {
 
       <SidebarFooter className="p-4 space-y-2">
         <Separator className="mb-2 bg-border/40" />
-        
-        {/* System Status Indicator */}
-        <div className="mb-3 p-3 rounded-xl glass-card depth-2">
-          <div className="flex items-center gap-3">
-            <div className="relative">
-              <div className="h-3 w-3 rounded-full bg-gradient-to-r from-green-500 to-emerald-500 animate-pulse shadow-lg shadow-green-500/50" />
-              <div className="absolute inset-0 h-3 w-3 rounded-full bg-green-500 animate-ping opacity-75" />
-            </div>
-            {!isCollapsed && (
-              <div className="flex-1">
-                <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">État système</p>
-                <p className="text-sm font-bold text-green-600 dark:text-green-400">Opérationnel</p>
+
+        {/* System Status Indicator - Multi-level */}
+        <Popover>
+          <PopoverTrigger asChild>
+            <Button variant="ghost" className="w-full justify-start gap-3 h-auto py-3 hover:bg-accent/50">
+              <div className="relative flex-shrink-0">
+                {systemMetrics.status === "operational" && (
+                  <>
+                    <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
+                    <div className="absolute inset-0 w-2 h-2 rounded-full bg-green-500 animate-ping opacity-75" />
+                  </>
+                )}
+                {systemMetrics.status === "warning" && (
+                  <>
+                    <div className="w-2 h-2 rounded-full bg-orange-500 animate-pulse" />
+                    <div className="absolute inset-0 w-2 h-2 rounded-full bg-orange-500 animate-ping opacity-75" />
+                  </>
+                )}
+                {systemMetrics.status === "error" && (
+                  <>
+                    <div className="w-2 h-2 rounded-full bg-red-500 animate-pulse" />
+                    <div className="absolute inset-0 w-2 h-2 rounded-full bg-red-500 animate-ping opacity-75" />
+                  </>
+                )}
               </div>
-            )}
-          </div>
-        </div>
-        
+              {!isCollapsed && (
+                <div className="flex-1 min-w-0 text-left">
+                  <p className="text-xs font-medium text-foreground">État système</p>
+                  <p className="text-xs text-muted-foreground">
+                    {systemMetrics.status === "operational" && "Opérationnel"}
+                    {systemMetrics.status === "warning" && "Attention requise"}
+                    {systemMetrics.status === "error" && "Problème détecté"}
+                  </p>
+                </div>
+              )}
+            </Button>
+          </PopoverTrigger>
+
+          <PopoverContent className="w-80 glass-card border-primary/20" side="top" align="start">
+            <div className="space-y-4">
+              <div className="flex items-center justify-between">
+                <h4 className="font-semibold text-sm flex items-center gap-2">
+                  <Activity className="w-4 h-4 text-primary" />
+                  Métriques système
+                </h4>
+                <div className="flex items-center gap-2 px-2 py-1 rounded-md bg-background/50">
+                  {systemMetrics.status === "operational" && <CheckCircle2 className="w-3 h-3 text-green-500" />}
+                  {systemMetrics.status === "warning" && <AlertCircle className="w-3 h-3 text-orange-500" />}
+                  {systemMetrics.status === "error" && <AlertCircle className="w-3 h-3 text-red-500" />}
+                  <span className="text-xs font-medium">
+                    {systemMetrics.status === "operational" && "OK"}
+                    {systemMetrics.status === "warning" && "Warning"}
+                    {systemMetrics.status === "error" && "Error"}
+                  </span>
+                </div>
+              </div>
+
+              <div className="space-y-3">
+                <div className="flex justify-between items-center p-2 rounded-lg bg-background/30">
+                  <span className="text-xs text-muted-foreground">Disponibilité</span>
+                  <span className="text-sm font-semibold text-green-500">{systemMetrics.uptime}</span>
+                </div>
+
+                <div className="flex justify-between items-center p-2 rounded-lg bg-background/30">
+                  <span className="text-xs text-muted-foreground">Utilisateurs actifs</span>
+                  <span className="text-sm font-semibold">{systemMetrics.activeUsers}</span>
+                </div>
+
+                <div className="flex justify-between items-center p-2 rounded-lg bg-background/30">
+                  <span className="text-xs text-muted-foreground">Apps en cours</span>
+                  <span className="text-sm font-semibold">{systemMetrics.activeApps}</span>
+                </div>
+
+                <div className="pt-2 border-t border-border/50">
+                  <p className="text-xs text-muted-foreground">
+                    Dernière vérification : {systemMetrics.lastCheck.toLocaleTimeString()}
+                  </p>
+                </div>
+              </div>
+            </div>
+          </PopoverContent>
+        </Popover>
+
         {/* User Profile */}
         {currentUser && (
-          <SidebarMenuButton
-            asChild
-            tooltip={isCollapsed ? "Profil" : undefined}
-            className="hover:bg-accent/10 transition-all duration-300"
-          >
+          <SidebarMenuButton asChild tooltip={isCollapsed ? "Profil" : undefined} className="hover:bg-accent/10 transition-all duration-300">
             <Link to="/profile" className="flex items-center gap-3 w-full">
               <div className="p-1.5 rounded-lg bg-gradient-to-br from-primary/20 to-accent/20">
                 <UserCircle className="h-4 w-4" />
@@ -211,7 +307,7 @@ export function AppSidebar() {
               {!isCollapsed && (
                 <div className="flex-1 text-left">
                   <p className="text-sm font-medium text-foreground">{currentUser}</p>
-                  <p className="text-xs text-muted-foreground">{isAdmin ? 'Admin' : 'Utilisateur'}</p>
+                  <p className="text-xs text-muted-foreground">{isAdmin ? "Admin" : "Utilisateur"}</p>
                 </div>
               )}
             </Link>
@@ -224,14 +320,12 @@ export function AppSidebar() {
           size={isCollapsed ? "icon" : "default"}
           onClick={toggleTheme}
           className="w-full hover:bg-accent/10 transition-all duration-300"
-          title={isCollapsed ? (theme === 'dark' ? 'Mode clair' : 'Mode sombre') : undefined}
+          title={isCollapsed ? (theme === "dark" ? "Mode clair" : "Mode sombre") : undefined}
         >
           <div className="p-1.5 rounded-lg bg-gradient-to-br from-yellow-500/20 to-orange-500/20">
-            {theme === 'dark' ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+            {theme === "dark" ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
           </div>
-          {!isCollapsed && (
-            <span className="ml-3">{theme === 'dark' ? 'Mode clair' : 'Mode sombre'}</span>
-          )}
+          {!isCollapsed && <span className="ml-3">{theme === "dark" ? "Mode clair" : "Mode sombre"}</span>}
         </Button>
 
         {/* Logout */}
