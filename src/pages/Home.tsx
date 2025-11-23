@@ -1,176 +1,192 @@
-import { Link } from 'react-router-dom';
-import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Navbar } from '@/components/Navbar';
-import { Server, Zap, Shield, Cloud, Package, ArrowRight } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { useAppContext } from '@/contexts/AppContext';
+import { Server, Package, Activity, ArrowRight, Sparkles, Zap, Shield, TrendingUp } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { StatsCard } from '@/components/StatsCard';
+import { QuickActions } from '@/components/QuickActions';
 
 const Home = () => {
+  const { apps, logs } = useAppContext();
+  const navigate = useNavigate();
+
+  const installedApps = apps.filter(app => app.status !== 'not_installed').length;
+  const runningApps = apps.filter(app => app.status === 'running').length;
+  const totalApps = apps.length;
+
   return (
-    <div className="min-h-screen bg-background">
-      <Navbar />
-      
-      {/* Hero Section */}
-      <section className="container py-20 md:py-32">
-        <div className="mx-auto max-w-3xl text-center animate-fade-in">
-          <div className="mb-6 flex justify-center">
-            <div className="gradient-primary rounded-full p-6 shadow-2xl hover-lift">
-              <Server className="h-16 w-16 text-white" />
+    <div className="min-h-full">
+      {/* Hero Section with Glassmorphism */}
+      <div className="relative overflow-hidden">
+        {/* Animated background */}
+        <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-accent/5 to-background -z-10" />
+        <div className="absolute top-20 right-20 h-72 w-72 rounded-full bg-primary/10 blur-3xl animate-float" />
+        <div className="absolute bottom-20 left-20 h-96 w-96 rounded-full bg-accent/10 blur-3xl animate-float" style={{ animationDelay: '3s' }} />
+        
+        <div className="container py-20">
+          {/* Hero Section */}
+          <div className="text-center mb-20 space-y-8">
+            <div className="inline-block animate-scale-in">
+              <div className="p-4 rounded-3xl bg-gradient-to-br from-primary via-accent to-primary shadow-2xl glow-strong animate-gradient-shift">
+                <Server className="h-16 w-16 text-white" />
+              </div>
             </div>
-          </div>
-          <h1 className="mb-6 text-4xl font-bold tracking-tight text-foreground sm:text-6xl bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
-            AutoServe
-          </h1>
-          <p className="mb-4 text-xl text-muted-foreground font-medium">
-            Plateforme d'Applications Self-Hosted Préconfigurées
-          </p>
-          <p className="mb-8 text-lg text-muted-foreground">
-            Logiciel Linux avec une interface web simpliste pour installer et gérer vos applications auto-hébergées en 1 clic
-          </p>
-          <div className="flex flex-col gap-4 sm:flex-row sm:justify-center">
-            <Link to="/catalog">
-              <Button size="lg" className="w-full sm:w-auto hover-lift shadow-lg">
-                <Package className="mr-2 h-5 w-5" />
-                Voir le catalogue
+            
+            <div className="space-y-4 animate-fade-in" style={{ animationDelay: '0.2s' }}>
+              <h1 className="text-6xl md:text-7xl font-bold">
+                <span className="text-gradient animate-gradient-shift">AutoServe</span>
+              </h1>
+              <p className="text-2xl text-muted-foreground max-w-3xl mx-auto leading-relaxed font-light">
+                Plateforme moderne de gestion et déploiement d'applications auto-hébergées
+              </p>
+            </div>
+            
+            <div className="flex flex-wrap items-center justify-center gap-4 animate-fade-in" style={{ animationDelay: '0.4s' }}>
+              <Button size="lg" onClick={() => navigate('/catalog')} className="gradient-primary hover:opacity-90 shadow-xl hover:shadow-2xl transition-all duration-300 hover:scale-105 text-lg px-8 py-6">
+                <Sparkles className="mr-2 h-5 w-5" />
+                Explorer le catalogue
                 <ArrowRight className="ml-2 h-5 w-5" />
               </Button>
-            </Link>
-            <Link to="/dashboard">
-              <Button size="lg" variant="outline" className="w-full sm:w-auto hover-lift">
-                Accéder au Dashboard
+              <Button size="lg" variant="outline" onClick={() => navigate('/dashboard')} className="border-primary/30 hover:border-primary hover:bg-primary/5 shadow-lg text-lg px-8 py-6">
+                <Activity className="mr-2 h-5 w-5" />
+                Voir le Dashboard
               </Button>
-            </Link>
+            </div>
           </div>
-        </div>
-      </section>
 
-      {/* Features Section */}
-      <section className="container py-16">
-        <div className="mb-12 text-center animate-fade-in">
-          <h2 className="mb-4 text-3xl font-bold text-foreground">Caractéristiques principales</h2>
-          <p className="text-lg text-muted-foreground">
-            Tout ce dont vous avez besoin pour auto-héberger vos applications
-          </p>
-        </div>
-        
-        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
-          <Card className="card-hover animate-fade-in">
-            <CardHeader>
-              <div className="gradient-primary rounded-lg p-2 w-fit">
-                <Package className="h-8 w-8 text-white" />
-              </div>
-              <CardTitle className="mt-4">Installation en 1 clic</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <CardDescription>
-                Plus de 15 applications préconfigurées prêtes à être installées instantanément
-              </CardDescription>
-            </CardContent>
-          </Card>
+          {/* Stats Grid with new StatsCard component */}
+          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4 mb-16">
+            <StatsCard
+              title="Applications disponibles"
+              value={totalApps}
+              icon={Package}
+              gradient="from-blue-500 to-cyan-500"
+            />
+            
+            <StatsCard
+              title="Applications installées"
+              value={installedApps}
+              icon={TrendingUp}
+              gradient="from-green-500 to-emerald-500"
+              trend={{ value: 12, positive: true }}
+              delay="0.1s"
+            />
+            
+            <StatsCard
+              title="Applications actives"
+              value={runningApps}
+              icon={Activity}
+              gradient="from-purple-500 to-pink-500"
+              trend={{ value: 8, positive: true }}
+              delay="0.2s"
+            />
+            
+            <StatsCard
+              title="Logs système"
+              value={logs.length}
+              icon={Server}
+              gradient="from-orange-500 to-red-500"
+              delay="0.3s"
+            />
+          </div>
 
-          <Card className="card-hover animate-fade-in" style={{ animationDelay: '0.1s' }}>
-            <CardHeader>
-              <div className="gradient-primary rounded-lg p-2 w-fit">
-                <Shield className="h-8 w-8 text-white" />
-              </div>
-              <CardTitle className="mt-4">Sécurisé par défaut</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <CardDescription>
-                HTTPS, pare-feu, isolation des conteneurs et permissions configurés automatiquement
-              </CardDescription>
-            </CardContent>
-          </Card>
-
-          <Card className="card-hover animate-fade-in" style={{ animationDelay: '0.2s' }}>
-            <CardHeader>
-              <div className="gradient-primary rounded-lg p-2 w-fit">
-                <Zap className="h-8 w-8 text-white" />
-              </div>
-              <CardTitle className="mt-4">Interface simpliste</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <CardDescription>
-                Gérez toutes vos applications depuis un panneau web simple et intuitif
-              </CardDescription>
-            </CardContent>
-          </Card>
-
-          <Card className="card-hover animate-fade-in" style={{ animationDelay: '0.3s' }}>
-            <CardHeader>
-              <div className="gradient-primary rounded-lg p-2 w-fit">
-                <Cloud className="h-8 w-8 text-white" />
-              </div>
-              <CardTitle className="mt-4">Accès distant</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <CardDescription>
-                Certificats HTTPS automatiques pour un accès sécurisé de n'importe où
-              </CardDescription>
-            </CardContent>
-          </Card>
-        </div>
-      </section>
-
-      {/* App Categories */}
-      <section className="container py-16">
-        <div className="mb-12 text-center">
-          <h2 className="mb-4 text-3xl font-bold text-foreground">Bibliothèque d'applications</h2>
-          <p className="text-lg text-muted-foreground">
-            Des applications pour tous vos besoins
-          </p>
-        </div>
-
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-          {[
-            { emoji: '🎬', title: 'Serveurs multimédias', desc: 'Jellyfin, Plex, Navidrome' },
-            { emoji: '📥', title: 'Téléchargement', desc: 'qBittorrent, Transmission, SABnzbd' },
-            { emoji: '🔁', title: 'Automatisation', desc: 'Sonarr, Radarr, Lidarr, Bazarr' },
-            { emoji: '🌩', title: 'Cloud privé', desc: 'Nextcloud, Seafile, Syncthing' },
-            { emoji: '🧰', title: 'Outils', desc: 'Portainer, FileBrowser, Code-Server' },
-            { emoji: '🔐', title: 'Sécurité', desc: 'Vaultwarden, Authelia' },
-          ].map((category, i) => (
-            <Card key={i} className="card-hover animate-fade-in" style={{ animationDelay: `${i * 0.1}s` }}>
+          {/* Features Grid with Glassmorphism */}
+          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 mb-16">
+            <Card className="glass-card hover:shadow-2xl transition-all duration-500 hover:scale-105 group animate-scale-in" style={{ animationDelay: '0.4s' }}>
               <CardHeader>
-                <div className="mb-2 text-5xl hover-lift">{category.emoji}</div>
-                <CardTitle className="text-lg">{category.title}</CardTitle>
+                <div className="p-4 rounded-2xl bg-gradient-to-br from-blue-500 to-cyan-500 w-fit mb-4 shadow-lg group-hover:scale-110 transition-transform duration-300">
+                  <Package className="h-7 w-7 text-white" />
+                </div>
+                <CardTitle className="text-xl">Applications variées</CardTitle>
+                <CardDescription className="text-base">
+                  Large catalogue d'applications prêtes à déployer
+                </CardDescription>
               </CardHeader>
               <CardContent>
-                <CardDescription>{category.desc}</CardDescription>
+                <Button 
+                  variant="ghost" 
+                  className="w-full justify-between group/btn hover:bg-primary/10 transition-all duration-300 text-primary font-medium"
+                  onClick={() => navigate('/catalog')}
+                >
+                  Explorer le catalogue
+                  <ArrowRight className="h-4 w-4 group-hover/btn:translate-x-2 transition-transform duration-300" />
+                </Button>
               </CardContent>
             </Card>
-          ))}
-        </div>
-      </section>
 
-      {/* CTA Section */}
-      <section className="container py-20">
-        <Card className="gradient-primary text-white border-0 shadow-2xl animate-fade-in">
-          <CardHeader className="text-center">
-            <CardTitle className="text-3xl">Prêt à commencer ?</CardTitle>
-            <CardDescription className="text-white/90 text-base">
-              Installez AutoServe sur votre serveur Linux en quelques minutes
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="flex flex-col items-center gap-4">
-            <code className="rounded-lg bg-white/20 backdrop-blur px-6 py-3 text-sm font-mono hover-lift">
-              curl -sSL https://autoserve.sh/install | bash
-            </code>
-            <Link to="/catalog">
-              <Button size="lg" variant="secondary" className="hover-lift shadow-lg">
-                Découvrir les applications
-              </Button>
-            </Link>
-          </CardContent>
-        </Card>
-      </section>
+            <Card className="glass-card hover:shadow-2xl transition-all duration-500 hover:scale-105 group animate-scale-in" style={{ animationDelay: '0.5s' }}>
+              <CardHeader>
+                <div className="p-4 rounded-2xl bg-gradient-to-br from-green-500 to-emerald-500 w-fit mb-4 shadow-lg group-hover:scale-110 transition-transform duration-300">
+                  <Activity className="h-7 w-7 text-white" />
+                </div>
+                <CardTitle className="text-xl">Surveillance temps réel</CardTitle>
+                <CardDescription className="text-base">
+                  Suivez l'état et les performances de vos services
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <Button 
+                  variant="ghost" 
+                  className="w-full justify-between group/btn hover:bg-primary/10 transition-all duration-300 text-primary font-medium"
+                  onClick={() => navigate('/dashboard')}
+                >
+                  Ouvrir Dashboard
+                  <ArrowRight className="h-4 w-4 group-hover/btn:translate-x-2 transition-transform duration-300" />
+                </Button>
+              </CardContent>
+            </Card>
 
-      {/* Footer */}
-      <footer className="border-t py-8">
-        <div className="container text-center text-sm text-muted-foreground">
-          <p>AutoServe - Logiciel libre sous licence GPL v3</p>
-          <p className="mt-2">Rendez le self-hosting aussi simple qu'un App Store</p>
+            <Card className="glass-card hover:shadow-2xl transition-all duration-500 hover:scale-105 group animate-scale-in" style={{ animationDelay: '0.6s' }}>
+              <CardHeader>
+                <div className="p-4 rounded-2xl bg-gradient-to-br from-purple-500 to-pink-500 w-fit mb-4 shadow-lg group-hover:scale-110 transition-transform duration-300">
+                  <Server className="h-7 w-7 text-white" />
+                </div>
+                <CardTitle className="text-xl">Logs centralisés</CardTitle>
+                <CardDescription className="text-base">
+                  Accédez à tous les journaux système en un seul endroit
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <Button 
+                  variant="ghost" 
+                  className="w-full justify-between group/btn hover:bg-primary/10 transition-all duration-300 text-primary font-medium"
+                  onClick={() => navigate('/logs')}
+                >
+                  Consulter logs
+                  <ArrowRight className="h-4 w-4 group-hover/btn:translate-x-2 transition-transform duration-300" />
+                </Button>
+              </CardContent>
+            </Card>
+          </div>
+
+          {/* Additional Features Section */}
+          <div className="grid gap-8 md:grid-cols-3 items-start">
+            <div className="text-center space-y-4 p-6 rounded-2xl glass-card hover:shadow-xl transition-all duration-500 hover:scale-105 animate-fade-in" style={{ animationDelay: '0.7s' }}>
+              <div className="inline-block p-4 rounded-2xl bg-gradient-to-br from-primary/10 to-accent/10">
+                <Zap className="h-10 w-10 text-primary" />
+              </div>
+              <h3 className="text-xl font-bold">Déploiement rapide</h3>
+              <p className="text-muted-foreground leading-relaxed">Installation en un clic avec configuration automatique</p>
+            </div>
+            
+            <div className="text-center space-y-4 p-6 rounded-2xl glass-card hover:shadow-xl transition-all duration-500 hover:scale-105 animate-fade-in" style={{ animationDelay: '0.8s' }}>
+              <div className="inline-block p-4 rounded-2xl bg-gradient-to-br from-green-500/10 to-emerald-500/10">
+                <Shield className="h-10 w-10 text-green-500" />
+              </div>
+              <h3 className="text-xl font-bold">Sécurisé</h3>
+              <p className="text-muted-foreground leading-relaxed">Gestion des permissions et authentification robuste</p>
+            </div>
+            
+            <div className="text-center space-y-4 p-6 rounded-2xl glass-card hover:shadow-xl transition-all duration-500 hover:scale-105 animate-fade-in" style={{ animationDelay: '0.9s' }}>
+              <div className="inline-block p-4 rounded-2xl bg-gradient-to-br from-purple-500/10 to-pink-500/10">
+                <Sparkles className="h-10 w-10 text-purple-500" />
+              </div>
+              <h3 className="text-xl font-bold">Interface moderne</h3>
+              <p className="text-muted-foreground leading-relaxed">Design élégant et intuitif pour une expérience optimale</p>
+            </div>
+          </div>
         </div>
-      </footer>
+      </div>
     </div>
   );
 };

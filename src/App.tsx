@@ -8,12 +8,14 @@ import { AuthProvider } from "./contexts/AuthContext";
 import { ThemeProvider } from "./contexts/ThemeContext";
 import { ProtectedRoute } from "./components/ProtectedRoute";
 import { AdminRoute } from "./components/AdminRoute";
+import { Layout } from "./components/Layout";
 import Home from "./pages/Home";
 import Dashboard from "./pages/Dashboard";
 import AppCatalog from "./pages/AppCatalog";
 import Settings from "./pages/Settings";
 import Logs from "./pages/Logs";
 import Users from "./pages/Users";
+import Profile from "./pages/Profile";
 import Login from "./pages/Login";
 import NotFound from "./pages/NotFound";
 
@@ -30,12 +32,13 @@ const App = () => (
             <BrowserRouter>
               <Routes>
                 <Route path="/login" element={<Login />} />
-                <Route path="/" element={<ProtectedRoute><Home /></ProtectedRoute>} />
-                <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
-                <Route path="/catalog" element={<ProtectedRoute><AppCatalog /></ProtectedRoute>} />
-                <Route path="/logs" element={<ProtectedRoute><Logs /></ProtectedRoute>} />
-                <Route path="/settings" element={<AdminRoute><Settings /></AdminRoute>} />
-                <Route path="/users" element={<AdminRoute><Users /></AdminRoute>} />
+                <Route path="/" element={<ProtectedRoute><Layout><Home /></Layout></ProtectedRoute>} />
+                <Route path="/dashboard" element={<ProtectedRoute><Layout><Dashboard /></Layout></ProtectedRoute>} />
+                <Route path="/catalog" element={<ProtectedRoute><Layout><AppCatalog /></Layout></ProtectedRoute>} />
+                <Route path="/logs" element={<ProtectedRoute><Layout><Logs /></Layout></ProtectedRoute>} />
+                <Route path="/profile" element={<ProtectedRoute><Layout><Profile /></Layout></ProtectedRoute>} />
+                <Route path="/settings" element={<AdminRoute><Layout><Settings /></Layout></AdminRoute>} />
+                <Route path="/users" element={<AdminRoute><Layout><Users /></Layout></AdminRoute>} />
                 {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
                 <Route path="*" element={<NotFound />} />
               </Routes>

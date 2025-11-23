@@ -6,6 +6,7 @@ export interface User {
   username: string;
   password: string;
   role: UserRole;
+  email?: string;
 }
 
 interface AuthContextType {
@@ -16,6 +17,7 @@ interface AuthContextType {
   login: (username: string, password: string) => { success: boolean; error?: string };
   signup: (username: string, password: string) => { success: boolean; error?: string };
   logout: () => void;
+  updateProfile: (username: string, email: string, newPassword?: string) => void;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -147,8 +149,37 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     localStorage.removeItem(CURRENT_USER_KEY);
   };
 
+  const updateProfile = (username: string, email: string, newPassword?: string) => {
+    if (!currentUser) return;
+
+    const users = getUsers();
+    const updatedUsers = users.map(user => {
+      if (user.username === currentUser) {
+        const updates: Partial<User> = {
+          username,
+          email,
+        };
+        
+        if (newPassword) {
+          updates.password = simpleHash(newPassword);
+        }
+        
+        return { ...user, ...updates };
+      }
+      return user;
+    });
+
+    saveUsers(updatedUsers);
+    
+    // Update current user if username changed
+    if (username !== currentUser) {
+      setCurrentUser(username);
+      localStorage.setItem(CURRENT_USER_KEY, username);
+    }
+  };
+
   return (
-    <AuthContext.Provider value={{ isAuthenticated, currentUser, userRole, isAdmin, login, signup, logout }}>
+    <AuthContext.Provider value={{ isAuthenticated, currentUser, userRole, isAdmin, login, signup, logout, updateProfile }}>
       {children}
     </AuthContext.Provider>
   );
