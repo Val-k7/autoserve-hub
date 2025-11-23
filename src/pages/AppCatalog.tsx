@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import { Navbar } from '@/components/Navbar';
 import { CatalogAppCard } from '@/components/CatalogAppCard';
 import { InstallDialog } from '@/components/InstallDialog';
 import { useAppContext } from '@/contexts/AppContext';
@@ -52,64 +51,82 @@ const AppCatalog = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background">
-      <Navbar />
-      
+    <div className="min-h-screen mesh-background">
       <div className="container py-8">
-        <div className="mb-8">
-          <h1 className="mb-2 text-3xl font-bold text-foreground">Catalogue d'applications</h1>
-          <p className="text-muted-foreground">
-            Parcourez et installez des applications auto-hébergées en un clic
-          </p>
-        </div>
-
-        {/* Search */}
-        <div className="mb-6">
-          <div className="relative">
-            <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-            <Input
-              placeholder="Rechercher une application..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-10"
-            />
+        {/* Hero Header with depth */}
+        <div className="mb-12 relative">
+          <div className="absolute inset-0 bg-gradient-to-r from-primary/10 via-accent/10 to-primary/10 blur-3xl -z-10 rounded-3xl" />
+          <div className="glass-card p-8 rounded-3xl">
+            <h1 className="mb-3 text-5xl font-bold text-gradient animate-gradient-shift">
+              Catalogue d'applications
+            </h1>
+            <p className="text-muted-foreground text-lg">
+              Parcourez et installez des applications auto-hébergées en un clic
+            </p>
           </div>
         </div>
 
-        {/* Apps by Category */}
-        <Tabs defaultValue="all" className="space-y-4">
-          <TabsList className="flex flex-wrap h-auto">
-            <TabsTrigger value="all">
-              Toutes ({apps.length})
-            </TabsTrigger>
-            {(Object.entries(APP_CATEGORIES) as [AppCategory, typeof APP_CATEGORIES[AppCategory]][]).map(([key, { label, icon }]) => (
-              <TabsTrigger key={key} value={key}>
-                {icon} {label} ({apps.filter(a => a.category === key).length})
-              </TabsTrigger>
-            ))}
-          </TabsList>
+        {/* Search with 3D effect */}
+        <div className="mb-8 animate-fade-in">
+          <div className="relative group">
+            <div className="absolute inset-0 bg-gradient-to-r from-primary/20 to-accent/20 blur-xl group-hover:blur-2xl transition-all duration-500 -z-10 rounded-2xl" />
+            <div className="relative depth-3 rounded-2xl overflow-hidden">
+              <Search className="absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-primary z-10" />
+              <Input
+                placeholder="Rechercher une application..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="pl-12 h-14 text-base border-primary/20 bg-card/80 backdrop-blur-sm focus:border-primary transition-all duration-300"
+              />
+            </div>
+          </div>
+        </div>
 
-          <TabsContent value="all" className="space-y-4">
-            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-              {filterApps().map(app => (
-                <CatalogAppCard
-                  key={app.id}
-                  app={app}
-                  onInstallClick={handleInstallClick}
-                />
+        {/* Apps by Category with enhanced styling */}
+        <Tabs defaultValue="all" className="space-y-6">
+          <div className="glass-card p-2 rounded-2xl depth-2">
+            <TabsList className="flex flex-wrap h-auto gap-2 bg-transparent">
+              <TabsTrigger 
+                value="all" 
+                className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-primary data-[state=active]:to-accent data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=active]:shadow-primary/50 rounded-xl px-4 py-2.5 transition-all duration-300"
+              >
+                Toutes ({apps.length})
+              </TabsTrigger>
+              {(Object.entries(APP_CATEGORIES) as [AppCategory, typeof APP_CATEGORIES[AppCategory]][]).map(([key, { label, icon }]) => (
+                <TabsTrigger 
+                  key={key} 
+                  value={key}
+                  className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-primary data-[state=active]:to-accent data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=active]:shadow-primary/50 rounded-xl px-4 py-2.5 transition-all duration-300"
+                >
+                  {icon} {label} ({apps.filter(a => a.category === key).length})
+                </TabsTrigger>
+              ))}
+            </TabsList>
+          </div>
+
+          <TabsContent value="all" className="space-y-4 animate-fade-in">
+            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+              {filterApps().map((app, index) => (
+                <div key={app.id} className="animate-scale-in" style={{ animationDelay: `${index * 0.05}s` }}>
+                  <CatalogAppCard
+                    app={app}
+                    onInstallClick={handleInstallClick}
+                  />
+                </div>
               ))}
             </div>
           </TabsContent>
 
           {(Object.keys(APP_CATEGORIES) as AppCategory[]).map(category => (
-            <TabsContent key={category} value={category} className="space-y-4">
-              <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-                {filterApps(category).map(app => (
-                  <CatalogAppCard
-                    key={app.id}
-                    app={app}
-                    onInstallClick={handleInstallClick}
-                  />
+            <TabsContent key={category} value={category} className="space-y-4 animate-fade-in">
+              <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+                {filterApps(category).map((app, index) => (
+                  <div key={app.id} className="animate-scale-in" style={{ animationDelay: `${index * 0.05}s` }}>
+                    <CatalogAppCard
+                      app={app}
+                      onInstallClick={handleInstallClick}
+                    />
+                  </div>
                 ))}
               </div>
             </TabsContent>
