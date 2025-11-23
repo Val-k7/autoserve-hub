@@ -14,19 +14,19 @@ interface AppCardProps {
 
 export const AppCard = ({ app, onInstall, onStart, onStop, onUninstall }: AppCardProps) => {
   return (
-    <Card className="flex flex-col">
+    <Card className="flex flex-col card-hover animate-fade-in">
       <CardHeader>
         <div className="flex items-start justify-between">
           <div className="flex items-center gap-3">
-            <span className="text-4xl">{app.icon}</span>
+            <div className="text-5xl hover-lift">{app.icon}</div>
             <div>
               <CardTitle className="text-xl">{app.name}</CardTitle>
-              {app.version && <p className="text-xs text-muted-foreground mt-1">v{app.version}</p>}
+              {app.version && <p className="text-xs text-muted-foreground mt-1 font-mono">v{app.version}</p>}
             </div>
           </div>
           <StatusBadge status={app.status} />
         </div>
-        <CardDescription className="mt-3">{app.description}</CardDescription>
+        <CardDescription className="mt-3 line-clamp-2">{app.description}</CardDescription>
       </CardHeader>
       
       <CardContent className="flex-1">
@@ -45,7 +45,7 @@ export const AppCard = ({ app, onInstall, onStart, onStop, onUninstall }: AppCar
 
       <CardFooter className="flex gap-2">
         {app.status === 'not_installed' && (
-          <Button onClick={() => onInstall?.(app)} className="flex-1" size="sm">
+          <Button onClick={() => onInstall?.(app)} className="flex-1 hover-lift" size="sm">
             <Download className="mr-2 h-4 w-4" />
             Installer
           </Button>
@@ -53,11 +53,11 @@ export const AppCard = ({ app, onInstall, onStart, onStop, onUninstall }: AppCar
         
         {app.status === 'installed' && (
           <>
-            <Button onClick={() => onStart?.(app)} className="flex-1" size="sm">
+            <Button onClick={() => onStart?.(app)} className="flex-1 hover-lift" size="sm">
               <Play className="mr-2 h-4 w-4" />
               Démarrer
             </Button>
-            <Button onClick={() => onUninstall?.(app)} variant="destructive" size="sm">
+            <Button onClick={() => onUninstall?.(app)} variant="destructive" size="sm" className="hover-lift">
               <Trash2 className="h-4 w-4" />
             </Button>
           </>
@@ -65,11 +65,11 @@ export const AppCard = ({ app, onInstall, onStart, onStop, onUninstall }: AppCar
         
         {app.status === 'running' && (
           <>
-            <Button onClick={() => onStop?.(app)} variant="secondary" className="flex-1" size="sm">
+            <Button onClick={() => onStop?.(app)} variant="secondary" className="flex-1 hover-lift" size="sm">
               <Square className="mr-2 h-4 w-4" />
               Arrêter
             </Button>
-            <Button onClick={() => onUninstall?.(app)} variant="destructive" size="sm">
+            <Button onClick={() => onUninstall?.(app)} variant="destructive" size="sm" className="hover-lift">
               <Trash2 className="h-4 w-4" />
             </Button>
           </>
@@ -77,11 +77,11 @@ export const AppCard = ({ app, onInstall, onStart, onStop, onUninstall }: AppCar
         
         {app.status === 'stopped' && (
           <>
-            <Button onClick={() => onStart?.(app)} className="flex-1" size="sm">
+            <Button onClick={() => onStart?.(app)} className="flex-1 hover-lift" size="sm">
               <Play className="mr-2 h-4 w-4" />
               Démarrer
             </Button>
-            <Button onClick={() => onUninstall?.(app)} variant="destructive" size="sm">
+            <Button onClick={() => onUninstall?.(app)} variant="destructive" size="sm" className="hover-lift">
               <Trash2 className="h-4 w-4" />
             </Button>
           </>

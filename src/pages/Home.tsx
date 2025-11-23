@@ -11,14 +11,16 @@ const Home = () => {
       
       {/* Hero Section */}
       <section className="container py-20 md:py-32">
-        <div className="mx-auto max-w-3xl text-center">
+        <div className="mx-auto max-w-3xl text-center animate-fade-in">
           <div className="mb-6 flex justify-center">
-            <Server className="h-20 w-20 text-primary" />
+            <div className="gradient-primary rounded-full p-6 shadow-2xl hover-lift">
+              <Server className="h-16 w-16 text-white" />
+            </div>
           </div>
-          <h1 className="mb-6 text-4xl font-bold tracking-tight text-foreground sm:text-6xl">
+          <h1 className="mb-6 text-4xl font-bold tracking-tight text-foreground sm:text-6xl bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
             AutoServe
           </h1>
-          <p className="mb-4 text-xl text-muted-foreground">
+          <p className="mb-4 text-xl text-muted-foreground font-medium">
             Plateforme d'Applications Self-Hosted Préconfigurées
           </p>
           <p className="mb-8 text-lg text-muted-foreground">
@@ -26,14 +28,14 @@ const Home = () => {
           </p>
           <div className="flex flex-col gap-4 sm:flex-row sm:justify-center">
             <Link to="/catalog">
-              <Button size="lg" className="w-full sm:w-auto">
+              <Button size="lg" className="w-full sm:w-auto hover-lift shadow-lg">
                 <Package className="mr-2 h-5 w-5" />
                 Voir le catalogue
                 <ArrowRight className="ml-2 h-5 w-5" />
               </Button>
             </Link>
             <Link to="/dashboard">
-              <Button size="lg" variant="outline" className="w-full sm:w-auto">
+              <Button size="lg" variant="outline" className="w-full sm:w-auto hover-lift">
                 Accéder au Dashboard
               </Button>
             </Link>
@@ -43,7 +45,7 @@ const Home = () => {
 
       {/* Features Section */}
       <section className="container py-16">
-        <div className="mb-12 text-center">
+        <div className="mb-12 text-center animate-fade-in">
           <h2 className="mb-4 text-3xl font-bold text-foreground">Caractéristiques principales</h2>
           <p className="text-lg text-muted-foreground">
             Tout ce dont vous avez besoin pour auto-héberger vos applications
@@ -51,10 +53,12 @@ const Home = () => {
         </div>
         
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
-          <Card>
+          <Card className="card-hover animate-fade-in">
             <CardHeader>
-              <Package className="mb-2 h-10 w-10 text-primary" />
-              <CardTitle>Installation en 1 clic</CardTitle>
+              <div className="gradient-primary rounded-lg p-2 w-fit">
+                <Package className="h-8 w-8 text-white" />
+              </div>
+              <CardTitle className="mt-4">Installation en 1 clic</CardTitle>
             </CardHeader>
             <CardContent>
               <CardDescription>
@@ -63,10 +67,12 @@ const Home = () => {
             </CardContent>
           </Card>
 
-          <Card>
+          <Card className="card-hover animate-fade-in" style={{ animationDelay: '0.1s' }}>
             <CardHeader>
-              <Shield className="mb-2 h-10 w-10 text-primary" />
-              <CardTitle>Sécurisé par défaut</CardTitle>
+              <div className="gradient-primary rounded-lg p-2 w-fit">
+                <Shield className="h-8 w-8 text-white" />
+              </div>
+              <CardTitle className="mt-4">Sécurisé par défaut</CardTitle>
             </CardHeader>
             <CardContent>
               <CardDescription>
@@ -75,10 +81,12 @@ const Home = () => {
             </CardContent>
           </Card>
 
-          <Card>
+          <Card className="card-hover animate-fade-in" style={{ animationDelay: '0.2s' }}>
             <CardHeader>
-              <Zap className="mb-2 h-10 w-10 text-primary" />
-              <CardTitle>Interface simpliste</CardTitle>
+              <div className="gradient-primary rounded-lg p-2 w-fit">
+                <Zap className="h-8 w-8 text-white" />
+              </div>
+              <CardTitle className="mt-4">Interface simpliste</CardTitle>
             </CardHeader>
             <CardContent>
               <CardDescription>
@@ -87,10 +95,12 @@ const Home = () => {
             </CardContent>
           </Card>
 
-          <Card>
+          <Card className="card-hover animate-fade-in" style={{ animationDelay: '0.3s' }}>
             <CardHeader>
-              <Cloud className="mb-2 h-10 w-10 text-primary" />
-              <CardTitle>Accès distant</CardTitle>
+              <div className="gradient-primary rounded-lg p-2 w-fit">
+                <Cloud className="h-8 w-8 text-white" />
+              </div>
+              <CardTitle className="mt-4">Accès distant</CardTitle>
             </CardHeader>
             <CardContent>
               <CardDescription>
@@ -119,9 +129,9 @@ const Home = () => {
             { emoji: '🧰', title: 'Outils', desc: 'Portainer, FileBrowser, Code-Server' },
             { emoji: '🔐', title: 'Sécurité', desc: 'Vaultwarden, Authelia' },
           ].map((category, i) => (
-            <Card key={i}>
+            <Card key={i} className="card-hover animate-fade-in" style={{ animationDelay: `${i * 0.1}s` }}>
               <CardHeader>
-                <div className="mb-2 text-4xl">{category.emoji}</div>
+                <div className="mb-2 text-5xl hover-lift">{category.emoji}</div>
                 <CardTitle className="text-lg">{category.title}</CardTitle>
               </CardHeader>
               <CardContent>
@@ -134,19 +144,19 @@ const Home = () => {
 
       {/* CTA Section */}
       <section className="container py-20">
-        <Card className="bg-primary text-primary-foreground">
+        <Card className="gradient-primary text-white border-0 shadow-2xl animate-fade-in">
           <CardHeader className="text-center">
             <CardTitle className="text-3xl">Prêt à commencer ?</CardTitle>
-            <CardDescription className="text-primary-foreground/80">
+            <CardDescription className="text-white/90 text-base">
               Installez AutoServe sur votre serveur Linux en quelques minutes
             </CardDescription>
           </CardHeader>
           <CardContent className="flex flex-col items-center gap-4">
-            <code className="rounded-lg bg-primary-foreground/10 px-6 py-3 text-sm">
+            <code className="rounded-lg bg-white/20 backdrop-blur px-6 py-3 text-sm font-mono hover-lift">
               curl -sSL https://autoserve.sh/install | bash
             </code>
             <Link to="/catalog">
-              <Button size="lg" variant="secondary">
+              <Button size="lg" variant="secondary" className="hover-lift shadow-lg">
                 Découvrir les applications
               </Button>
             </Link>
