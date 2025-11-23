@@ -11,8 +11,9 @@ import { Lock, Mail, ArrowRight, Sparkles, Server } from "lucide-react";
 import { toast } from "sonner";
 
 const Login = () => {
-  const [loginUsername, setLoginUsername] = useState("");
+  const [loginEmail, setLoginEmail] = useState("");
   const [loginPassword, setLoginPassword] = useState("");
+  const [signupEmail, setSignupEmail] = useState("");
   const [signupUsername, setSignupUsername] = useState("");
   const [signupPassword, setSignupPassword] = useState("");
   const [signupConfirmPassword, setSignupConfirmPassword] = useState("");
@@ -28,7 +29,7 @@ const Login = () => {
 
     await new Promise(resolve => setTimeout(resolve, 1000));
 
-    const result = await login(loginUsername, loginPassword);
+    const result = await login(loginEmail, loginPassword);
     if (result.success) {
       toast.success("Connexion réussie");
       navigate("/dashboard");
@@ -50,7 +51,7 @@ const Login = () => {
 
     await new Promise(resolve => setTimeout(resolve, 1000));
 
-    const result = await signup(signupUsername, signupPassword);
+    const result = await signup(signupEmail, signupPassword, signupUsername);
     if (result.success) {
       toast.success("Compte créé avec succès");
       navigate("/dashboard");
@@ -117,16 +118,16 @@ const Login = () => {
             <TabsContent value="login" className="space-y-5 mt-4 animate-fade-in">
               <form onSubmit={handleLogin} className="space-y-5">
                 <div className="space-y-2">
-                  <Label htmlFor="login-username" className="flex items-center gap-2 text-sm font-medium">
+                  <Label htmlFor="login-email" className="flex items-center gap-2 text-sm font-medium">
                     <Mail className="w-4 h-4 text-primary" />
-                    Nom d'utilisateur
+                    Email
                   </Label>
                   <Input
-                    id="login-username"
-                    type="text"
-                    placeholder="admin"
-                    value={loginUsername}
-                    onChange={(e) => setLoginUsername(e.target.value)}
+                    id="login-email"
+                    type="email"
+                    placeholder="votre@email.com"
+                    value={loginEmail}
+                    onChange={(e) => setLoginEmail(e.target.value)}
                     required
                     className="h-12"
                   />
@@ -195,6 +196,22 @@ const Login = () => {
 
             <TabsContent value="signup" className="space-y-5 mt-4 animate-fade-in">
               <form onSubmit={handleSignup} className="space-y-5">
+                <div className="space-y-2">
+                  <Label htmlFor="signup-email" className="flex items-center gap-2 text-sm font-medium">
+                    <Mail className="w-4 h-4 text-primary" />
+                    Email
+                  </Label>
+                  <Input
+                    id="signup-email"
+                    type="email"
+                    placeholder="votre@email.com"
+                    value={signupEmail}
+                    onChange={(e) => setSignupEmail(e.target.value)}
+                    required
+                    className="h-12"
+                  />
+                </div>
+
                 <div className="space-y-2">
                   <Label htmlFor="signup-username" className="text-sm font-medium">
                     Nom d'utilisateur
