@@ -94,6 +94,41 @@ export type Database = {
           },
         ]
       }
+      manifest_cache: {
+        Row: {
+          cached_at: string
+          created_at: string
+          expires_at: string
+          id: string
+          manifest_data: Json
+          repository_id: string
+        }
+        Insert: {
+          cached_at?: string
+          created_at?: string
+          expires_at?: string
+          id?: string
+          manifest_data: Json
+          repository_id: string
+        }
+        Update: {
+          cached_at?: string
+          created_at?: string
+          expires_at?: string
+          id?: string
+          manifest_data?: Json
+          repository_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "manifest_cache_repository_id_fkey"
+            columns: ["repository_id"]
+            isOneToOne: true
+            referencedRelation: "repositories"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
           created_at: string | null
@@ -227,6 +262,7 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      clean_expired_manifest_cache: { Args: never; Returns: undefined }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]

@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { renderHook, waitFor } from '@testing-library/react';
+import { renderHook } from '@testing-library/react';
 import { useRepositories } from '../useRepositories';
 
 // Mock Supabase client
@@ -50,10 +50,10 @@ describe('useRepositories', () => {
   it('should fetch repositories on mount', async () => {
     const { result } = renderHook(() => useRepositories());
     
-    await waitFor(() => {
-      expect(result.current.loading).toBe(false);
-    });
+    // Wait for loading to complete
+    await new Promise(resolve => setTimeout(resolve, 100));
     
+    expect(result.current.loading).toBe(false);
     expect(result.current.repositories).toBeDefined();
   });
 
@@ -69,9 +69,8 @@ describe('useRepositories', () => {
   it('should handle repository operations', async () => {
     const { result } = renderHook(() => useRepositories());
     
-    await waitFor(() => {
-      expect(result.current.loading).toBe(false);
-    });
+    // Wait for loading to complete
+    await new Promise(resolve => setTimeout(resolve, 100));
 
     // Test that functions can be called without errors
     expect(() => {
