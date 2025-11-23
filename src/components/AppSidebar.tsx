@@ -181,6 +181,22 @@ export function AppSidebar() {
       <SidebarFooter className="p-4 space-y-2">
         <Separator className="mb-2 bg-border/40" />
         
+        {/* System Status Indicator */}
+        <div className="mb-3 p-3 rounded-xl glass-card depth-2">
+          <div className="flex items-center gap-3">
+            <div className="relative">
+              <div className="h-3 w-3 rounded-full bg-gradient-to-r from-green-500 to-emerald-500 animate-pulse shadow-lg shadow-green-500/50" />
+              <div className="absolute inset-0 h-3 w-3 rounded-full bg-green-500 animate-ping opacity-75" />
+            </div>
+            {!isCollapsed && (
+              <div className="flex-1">
+                <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">État système</p>
+                <p className="text-sm font-bold text-green-600 dark:text-green-400">Opérationnel</p>
+              </div>
+            )}
+          </div>
+        </div>
+        
         {/* User Profile */}
         {currentUser && (
           <SidebarMenuButton

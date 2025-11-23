@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import { Navbar } from '@/components/Navbar';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -30,121 +29,130 @@ const Settings = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background">
-      <Navbar />
-      
-      <div className="container py-8 animate-fade-in">
-        <div className="mb-8">
-          <h1 className="mb-2 text-4xl font-bold bg-gradient-to-r from-primary via-accent to-primary bg-clip-text text-transparent animate-fade-in">
-            Configuration Système
-          </h1>
-          <p className="text-muted-foreground text-lg">
-            Gérez les chemins, domaines et certificats HTTPS
-          </p>
+    <div className="min-h-full">
+      <div className="container py-8 animate-fade-in max-w-5xl mx-auto">
+        {/* Hero Header */}
+        <div className="mb-12 relative">
+          <div className="absolute inset-0 bg-gradient-to-r from-blue-500/10 via-cyan-500/10 to-teal-500/10 blur-3xl -z-10 rounded-3xl" />
+          <div className="glass-card p-8 rounded-3xl depth-3">
+            <h1 className="mb-3 text-5xl font-bold bg-gradient-to-r from-blue-600 via-cyan-600 to-teal-600 bg-clip-text text-transparent animate-gradient-shift">
+              Configuration Système
+            </h1>
+            <p className="text-muted-foreground text-lg">
+              Gérez les chemins, domaines et certificats HTTPS
+            </p>
+          </div>
         </div>
 
         <div className="space-y-6">
           {/* Chemins d'installation */}
-          <Card className="border-primary/20 shadow-lg hover:shadow-xl transition-all duration-300 card-hover animate-scale-in">
-            <CardHeader className="bg-gradient-to-r from-primary/5 to-accent/5">
-              <CardTitle className="flex items-center gap-2">
-                <div className="p-2 rounded-lg bg-primary/10">
-                  <FolderOpen className="h-5 w-5 text-primary" />
+          <Card className="glass-card hover:shadow-2xl transition-all duration-500 border-primary/20 animate-scale-in hover-lift">
+            <CardHeader className="bg-gradient-to-r from-primary/5 to-accent/5 rounded-t-2xl">
+              <CardTitle className="flex items-center gap-3 text-2xl">
+                <div className="p-3 rounded-xl bg-gradient-to-br from-blue-500 to-cyan-500 shadow-xl button-glow-primary">
+                  <FolderOpen className="h-6 w-6 text-white" />
                 </div>
                 Chemins d'installation
               </CardTitle>
-              <CardDescription>
+              <CardDescription className="text-base">
                 Définissez les répertoires par défaut pour les applications
               </CardDescription>
             </CardHeader>
-            <CardContent className="space-y-4 pt-6">
-              <div className="space-y-2">
-                <Label htmlFor="installPath" className="text-base font-medium">Chemin d'installation</Label>
+            <CardContent className="space-y-6 pt-6">
+              <div className="space-y-3">
+                <Label htmlFor="installPath" className="text-base font-semibold">Chemin d'installation</Label>
                 <Input
                   id="installPath"
                   value={settings.installPath}
                   onChange={(e) => handleChange('installPath', e.target.value)}
-                  className="border-primary/20 focus:border-primary transition-colors"
+                  className="border-primary/20 focus:border-primary transition-all duration-300 h-12 text-base depth-2"
                 />
               </div>
-              <div className="space-y-2">
-                <Label htmlFor="dataPath" className="text-base font-medium">Chemin des données</Label>
+              <div className="space-y-3">
+                <Label htmlFor="dataPath" className="text-base font-semibold">Chemin des données</Label>
                 <Input
                   id="dataPath"
                   value={settings.dataPath}
                   onChange={(e) => handleChange('dataPath', e.target.value)}
-                  className="border-primary/20 focus:border-primary transition-colors"
+                  className="border-primary/20 focus:border-primary transition-all duration-300 h-12 text-base depth-2"
                 />
               </div>
             </CardContent>
           </Card>
 
           {/* Configuration réseau */}
-          <Card className="border-primary/20 shadow-lg hover:shadow-xl transition-all duration-300 card-hover animate-scale-in" style={{ animationDelay: '0.1s' }}>
-            <CardHeader className="bg-gradient-to-r from-primary/5 to-accent/5">
-              <CardTitle className="flex items-center gap-2">
-                <div className="p-2 rounded-lg bg-primary/10">
-                  <Globe className="h-5 w-5 text-primary" />
+          <Card className="glass-card hover:shadow-2xl transition-all duration-500 border-primary/20 animate-scale-in hover-lift" style={{ animationDelay: '0.1s' }}>
+            <CardHeader className="bg-gradient-to-r from-primary/5 to-accent/5 rounded-t-2xl">
+              <CardTitle className="flex items-center gap-3 text-2xl">
+                <div className="p-3 rounded-xl bg-gradient-to-br from-green-500 to-emerald-500 shadow-xl button-glow-success">
+                  <Globe className="h-6 w-6 text-white" />
                 </div>
                 Configuration réseau
               </CardTitle>
-              <CardDescription>
+              <CardDescription className="text-base">
                 Paramètres de domaine et d'accès
               </CardDescription>
             </CardHeader>
-            <CardContent className="space-y-4 pt-6">
-              <div className="space-y-2">
-                <Label htmlFor="domain" className="text-base font-medium">Domaine</Label>
+            <CardContent className="space-y-6 pt-6">
+              <div className="space-y-3">
+                <Label htmlFor="domain" className="text-base font-semibold">Domaine</Label>
                 <Input
                   id="domain"
                   value={settings.domain}
                   onChange={(e) => handleChange('domain', e.target.value)}
                   placeholder="autoserve.local"
-                  className="border-primary/20 focus:border-primary transition-colors"
+                  className="border-primary/20 focus:border-primary transition-all duration-300 h-12 text-base depth-2"
                 />
               </div>
             </CardContent>
           </Card>
 
           {/* Certificats HTTPS */}
-          <Card className="border-primary/20 shadow-lg hover:shadow-xl transition-all duration-300 card-hover animate-scale-in" style={{ animationDelay: '0.2s' }}>
-            <CardHeader className="bg-gradient-to-r from-primary/5 to-accent/5">
-              <CardTitle className="flex items-center gap-2">
-                <div className="p-2 rounded-lg bg-primary/10">
-                  <Lock className="h-5 w-5 text-primary" />
+          <Card className="glass-card hover:shadow-2xl transition-all duration-500 border-primary/20 animate-scale-in hover-lift" style={{ animationDelay: '0.2s' }}>
+            <CardHeader className="bg-gradient-to-r from-primary/5 to-accent/5 rounded-t-2xl">
+              <CardTitle className="flex items-center gap-3 text-2xl">
+                <div className="p-3 rounded-xl bg-gradient-to-br from-orange-500 to-red-500 shadow-xl button-glow-destructive">
+                  <Lock className="h-6 w-6 text-white" />
                 </div>
                 Certificats HTTPS
               </CardTitle>
-              <CardDescription>
+              <CardDescription className="text-base">
                 Configuration des certificats SSL/TLS
               </CardDescription>
             </CardHeader>
-            <CardContent className="space-y-4 pt-6">
-              <div className="space-y-2">
-                <Label htmlFor="certPath" className="text-base font-medium">Chemin du certificat</Label>
+            <CardContent className="space-y-6 pt-6">
+              <div className="space-y-3">
+                <Label htmlFor="certPath" className="text-base font-semibold">Chemin du certificat</Label>
                 <Input
                   id="certPath"
                   value={settings.certPath}
                   onChange={(e) => handleChange('certPath', e.target.value)}
-                  className="border-primary/20 focus:border-primary transition-colors"
+                  className="border-primary/20 focus:border-primary transition-all duration-300 h-12 text-base depth-2"
                 />
               </div>
-              <div className="space-y-2">
-                <Label htmlFor="keyPath" className="text-base font-medium">Chemin de la clé privée</Label>
+              <div className="space-y-3">
+                <Label htmlFor="keyPath" className="text-base font-semibold">Chemin de la clé privée</Label>
                 <Input
                   id="keyPath"
                   value={settings.keyPath}
                   onChange={(e) => handleChange('keyPath', e.target.value)}
-                  className="border-primary/20 focus:border-primary transition-colors"
+                  className="border-primary/20 focus:border-primary transition-all duration-300 h-12 text-base depth-2"
                 />
               </div>
             </CardContent>
           </Card>
 
-          <Button onClick={handleSave} className="w-full sm:w-auto gradient-primary hover:opacity-90 transition-opacity shadow-lg hover:shadow-xl">
-            <Save className="mr-2 h-4 w-4" />
-            Sauvegarder les modifications
-          </Button>
+          {/* Save Button */}
+          <div className="flex justify-end animate-fade-in" style={{ animationDelay: '0.3s' }}>
+            <Button 
+              onClick={handleSave} 
+              size="lg"
+              className="px-8 button-glow-primary"
+            >
+              <Save className="mr-2 h-5 w-5" />
+              Sauvegarder les modifications
+            </Button>
+          </div>
         </div>
       </div>
     </div>
