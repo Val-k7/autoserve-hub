@@ -49,7 +49,7 @@ const Settings = () => {
           <Card className="glass-card hover:shadow-2xl transition-all duration-500 border-primary/20 animate-scale-in hover-lift">
             <CardHeader className="bg-gradient-to-r from-primary/5 to-accent/5 rounded-t-2xl">
               <CardTitle className="flex items-center gap-3 text-2xl">
-                <div className="p-3 rounded-xl bg-gradient-to-br from-blue-500 to-cyan-500 shadow-xl button-glow-primary">
+                <div className="p-3 rounded-xl bg-gradient-to-br from-blue-500 to-cyan-500 shadow-xl button-texture-primary">
                   <FolderOpen className="h-6 w-6 text-white" />
                 </div>
                 Chemins d'installation
@@ -84,7 +84,7 @@ const Settings = () => {
           <Card className="glass-card hover:shadow-2xl transition-all duration-500 border-primary/20 animate-scale-in hover-lift" style={{ animationDelay: '0.1s' }}>
             <CardHeader className="bg-gradient-to-r from-primary/5 to-accent/5 rounded-t-2xl">
               <CardTitle className="flex items-center gap-3 text-2xl">
-                <div className="p-3 rounded-xl bg-gradient-to-br from-green-500 to-emerald-500 shadow-xl button-glow-success">
+                <div className="p-3 rounded-xl bg-gradient-to-br from-green-500 to-emerald-500 shadow-xl button-texture-success">
                   <Globe className="h-6 w-6 text-white" />
                 </div>
                 Configuration réseau
@@ -111,7 +111,7 @@ const Settings = () => {
           <Card className="glass-card hover:shadow-2xl transition-all duration-500 border-primary/20 animate-scale-in hover-lift" style={{ animationDelay: '0.2s' }}>
             <CardHeader className="bg-gradient-to-r from-primary/5 to-accent/5 rounded-t-2xl">
               <CardTitle className="flex items-center gap-3 text-2xl">
-                <div className="p-3 rounded-xl bg-gradient-to-br from-orange-500 to-red-500 shadow-xl button-glow-destructive">
+                <div className="p-3 rounded-xl bg-gradient-to-br from-orange-500 to-red-500 shadow-xl button-texture-destructive">
                   <Lock className="h-6 w-6 text-white" />
                 </div>
                 Certificats HTTPS
@@ -147,7 +147,7 @@ const Settings = () => {
             <Button 
               onClick={handleSave} 
               size="lg"
-              className="px-8 button-glow-primary"
+              className="px-8 button-texture-primary"
             >
               <Save className="mr-2 h-5 w-5" />
               Sauvegarder les modifications

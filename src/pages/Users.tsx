@@ -78,7 +78,7 @@ const Users = () => {
           <div className="absolute inset-0 bg-gradient-to-r from-indigo-500/10 via-purple-500/10 to-pink-500/10 blur-3xl -z-10 rounded-3xl" />
           <div className="glass-card p-8 rounded-3xl depth-3">
             <div className="flex items-center gap-4">
-              <div className="p-4 rounded-2xl bg-gradient-to-br from-indigo-500 to-purple-500 shadow-2xl button-glow-primary">
+              <div className="p-4 rounded-2xl bg-gradient-to-br from-indigo-500 to-purple-500 shadow-2xl button-texture-primary">
                 <UsersIcon className="h-10 w-10 text-white" />
               </div>
               <div>
@@ -98,7 +98,7 @@ const Users = () => {
           <Card className="glass-card hover:shadow-2xl transition-all duration-500 border-primary/20 animate-scale-in hover-lift">
             <CardHeader className="bg-gradient-to-r from-primary/5 to-accent/5 rounded-t-2xl">
               <CardTitle className="flex items-center gap-3 text-2xl">
-                <div className="p-3 rounded-xl bg-gradient-to-br from-green-500 to-emerald-500 shadow-xl button-glow-success">
+                <div className="p-3 rounded-xl bg-gradient-to-br from-green-500 to-emerald-500 shadow-xl button-texture-success">
                   <UserPlus className="h-6 w-6 text-white" />
                 </div>
                 Paramètres d'inscription
@@ -131,7 +131,7 @@ const Users = () => {
           <Card className="glass-card hover:shadow-2xl transition-all duration-500 border-primary/20 animate-scale-in hover-lift" style={{ animationDelay: '0.1s' }}>
             <CardHeader className="bg-gradient-to-r from-primary/5 to-accent/5 rounded-t-2xl">
               <CardTitle className="flex items-center gap-3 text-2xl">
-                <div className="p-3 rounded-xl bg-gradient-to-br from-blue-500 to-cyan-500 shadow-xl button-glow-primary">
+                <div className="p-3 rounded-xl bg-gradient-to-br from-blue-500 to-cyan-500 shadow-xl button-texture-primary">
                   <UsersIcon className="h-6 w-6 text-white" />
                 </div>
                 Liste des utilisateurs
@@ -229,7 +229,7 @@ const Users = () => {
                                 <AlertDialogCancel className="depth-2">Annuler</AlertDialogCancel>
                                 <AlertDialogAction
                                   onClick={() => handleDeleteUser(user.username)}
-                                  className="bg-gradient-to-r from-red-500 to-red-600 text-white button-glow-destructive"
+                                  className="bg-gradient-to-r from-red-500 to-red-600 text-white button-texture-destructive"
                                 >
                                   Supprimer
                                 </AlertDialogAction>
