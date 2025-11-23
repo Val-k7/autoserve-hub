@@ -11,30 +11,36 @@ export const StatusBadge = ({ status }: StatusBadgeProps) => {
     running: { 
       label: 'En cours', 
       variant: 'default',
-      className: 'bg-gradient-to-r from-green-500 to-emerald-500 text-white border-0 shadow-sm'
+      className: 'bg-gradient-to-r from-green-500 to-emerald-500 text-white border-0 shadow-lg shadow-green-500/50 animate-pulse-glow'
     },
     installed: { 
       label: 'Installé', 
       variant: 'secondary',
-      className: 'bg-gradient-to-r from-blue-500/10 to-cyan-500/10 text-blue-600 dark:text-blue-400 border-blue-500/20'
+      className: 'bg-gradient-to-r from-blue-500/20 to-cyan-500/20 text-blue-600 dark:text-blue-400 border-2 border-blue-500/30'
     },
     stopped: { 
       label: 'Arrêté', 
       variant: 'destructive',
-      className: 'bg-gradient-to-r from-red-500/10 to-orange-500/10 text-red-600 dark:text-red-400 border-red-500/20'
+      className: 'bg-gradient-to-r from-orange-500/20 to-red-500/20 text-orange-600 dark:text-orange-400 border-2 border-orange-500/30'
     },
     not_installed: { 
       label: 'Non installé', 
       variant: 'outline',
-      className: 'border-border/50 text-muted-foreground'
+      className: 'border-2 border-border/50 text-muted-foreground bg-background/50'
     },
   };
 
   const config = statusConfig[status];
 
   return (
-    <Badge variant={config.variant} className={`${config.className} flex items-center gap-1.5 px-3 py-1 font-medium transition-all duration-300`}>
-      <Circle className="h-2 w-2 fill-current animate-pulse" />
+    <Badge 
+      variant={config.variant} 
+      className={`${config.className} flex items-center gap-2 px-3 py-1.5 font-bold transition-all duration-500 hover:scale-110`}
+    >
+      <div className="relative flex items-center">
+        <Circle className={`h-2 w-2 fill-current ${status === 'running' ? 'animate-ping absolute' : ''}`} />
+        <Circle className="h-2 w-2 fill-current relative" />
+      </div>
       {config.label}
     </Badge>
   );
