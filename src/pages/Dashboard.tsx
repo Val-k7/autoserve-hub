@@ -1,8 +1,7 @@
-import { useState } from 'react';
 import { Navbar } from '@/components/Navbar';
 import { AppCard } from '@/components/AppCard';
-import { AVAILABLE_APPS } from '@/data/apps';
-import { App, AppStatus } from '@/types/app';
+import { useAppContext } from '@/contexts/AppContext';
+import { App } from '@/types/app';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -10,23 +9,12 @@ import { Server, HardDrive, Activity } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
 const Dashboard = () => {
-  const [apps, setApps] = useState<App[]>(AVAILABLE_APPS);
+  const { apps, updateAppStatus, addLog } = useAppContext();
   const { toast } = useToast();
 
-  const handleInstall = (app: App) => {
-    setApps(apps.map(a => 
-      a.id === app.id ? { ...a, status: 'installed' as AppStatus, version: '1.0.0' } : a
-    ));
-    toast({
-      title: 'Installation réussie',
-      description: `${app.name} a été installé avec succès`,
-    });
-  };
-
   const handleStart = (app: App) => {
-    setApps(apps.map(a => 
-      a.id === app.id ? { ...a, status: 'running' as AppStatus, url: `https://${app.id}.localhost:9443` } : a
-    ));
+    updateAppStatus(app.id, 'running');
+    addLog('success', app.name, 'Application démarrée avec succès');
     toast({
       title: 'Application démarrée',
       description: `${app.name} est maintenant en cours d'exécution`,
@@ -34,9 +22,8 @@ const Dashboard = () => {
   };
 
   const handleStop = (app: App) => {
-    setApps(apps.map(a => 
-      a.id === app.id ? { ...a, status: 'stopped' as AppStatus, url: undefined } : a
-    ));
+    updateAppStatus(app.id, 'stopped');
+    addLog('info', app.name, 'Application arrêtée');
     toast({
       title: 'Application arrêtée',
       description: `${app.name} a été arrêté`,
@@ -44,9 +31,8 @@ const Dashboard = () => {
   };
 
   const handleUninstall = (app: App) => {
-    setApps(apps.map(a => 
-      a.id === app.id ? { ...a, status: 'not_installed' as AppStatus, url: undefined, version: undefined } : a
-    ));
+    updateAppStatus(app.id, 'not_installed');
+    addLog('warning', app.name, 'Application désinstallée');
     toast({
       title: 'Désinstallation réussie',
       description: `${app.name} a été désinstallé`,
