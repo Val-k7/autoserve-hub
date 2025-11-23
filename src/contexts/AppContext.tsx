@@ -2,6 +2,7 @@ import { createContext, useContext, useState, useEffect, ReactNode } from 'react
 import { App, AppStatus } from '@/types/app';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from './AuthContext';
+import { AVAILABLE_APPS } from '@/data/apps';
 
 export interface LogEntry {
   id: string;
@@ -46,39 +47,60 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
           .from('catalog_apps')
           .select('*');
 
-        if (catalogError) throw catalogError;
-
-        // Fetch user's installed apps if logged in
-        let installedApps: any[] = [];
-        if (currentUser) {
-          const { data: userApps, error: userAppsError } = await supabase
-            .from('user_installed_apps')
-            .select('*');
-
-          if (userAppsError) throw userAppsError;
-          installedApps = userApps || [];
+        if (catalogError) {
+          console.error('Error fetching catalog apps:', catalogError);
         }
 
-        // Map catalog apps to App type and merge with installation status
-        const mappedApps: App[] = (catalogApps || []).map(catalogApp => {
-          const userInstall = installedApps.find(ua => ua.catalog_app_id === catalogApp.id);
-          
-          return {
+        // Use local apps if catalog is empty
+        let appsToUse: App[] = AVAILABLE_APPS;
+        
+        if (catalogApps && catalogApps.length > 0) {
+          // Use catalog apps if available
+          appsToUse = catalogApps.map(catalogApp => ({
             id: catalogApp.app_id,
             name: catalogApp.name,
             description: catalogApp.description || '',
             category: catalogApp.category as any || 'tools',
             icon: catalogApp.icon || '📦',
-            status: userInstall ? (userInstall.status as AppStatus) : 'not_installed',
-            version: userInstall ? catalogApp.version : undefined,
+            status: 'not_installed' as AppStatus,
+            version: catalogApp.version || undefined,
             url: catalogApp.website_url || undefined,
-          };
-        });
+          }));
+        }
 
-        setApps(mappedApps);
+        // Fetch user's installed apps if logged in
+        if (currentUser) {
+          try {
+            const { data: userApps, error: userAppsError } = await supabase
+              .from('user_installed_apps')
+              .select('*, catalog_apps(app_id)');
+
+            if (!userAppsError && userApps) {
+              // Merge installation status
+              appsToUse = appsToUse.map(app => {
+                const userInstall = userApps.find((ua: any) => 
+                  ua.catalog_apps?.app_id === app.id
+                );
+                
+                if (userInstall) {
+                  return {
+                    ...app,
+                    status: userInstall.status as AppStatus,
+                  };
+                }
+                return app;
+              });
+            }
+          } catch (error) {
+            console.error('Error fetching user apps:', error);
+          }
+        }
+
+        setApps(appsToUse);
       } catch (error) {
         console.error('Error fetching apps:', error);
-        addLog('error', 'Système', 'Erreur lors du chargement des applications');
+        // Fallback to local apps on error
+        setApps(AVAILABLE_APPS);
       } finally {
         setLoading(false);
       }
@@ -98,45 +120,45 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     // Update in database if user is logged in
     if (currentUser) {
       try {
-        const app = apps.find(a => a.id === appId);
-        if (!app) return;
-
         // Get catalog app id
         const { data: catalogApp } = await supabase
           .from('catalog_apps')
           .select('id')
           .eq('app_id', appId)
-          .single();
+          .maybeSingle();
 
-        if (!catalogApp) return;
-
-        if (status === 'not_installed') {
-          // Delete from user_installed_apps
-          await supabase
-            .from('user_installed_apps')
-            .delete()
-            .eq('catalog_app_id', catalogApp.id);
-        } else {
-          // Upsert to user_installed_apps
-          const { data: existingInstall } = await supabase
-            .from('user_installed_apps')
-            .select('id')
-            .eq('catalog_app_id', catalogApp.id)
-            .maybeSingle();
-
-          if (existingInstall) {
+        // Only persist to database if app exists in catalog_apps
+        if (catalogApp) {
+          if (status === 'not_installed') {
+            // Delete from user_installed_apps
             await supabase
               .from('user_installed_apps')
-              .update({ status, updated_at: new Date().toISOString() })
-              .eq('id', existingInstall.id);
+              .delete()
+              .eq('catalog_app_id', catalogApp.id)
+              .eq('user_id', currentUser);
           } else {
-            await supabase
+            // Upsert to user_installed_apps
+            const { data: existingInstall } = await supabase
               .from('user_installed_apps')
-              .insert({
-                catalog_app_id: catalogApp.id,
-                status,
-                user_id: currentUser,
-              });
+              .select('id')
+              .eq('catalog_app_id', catalogApp.id)
+              .eq('user_id', currentUser)
+              .maybeSingle();
+
+            if (existingInstall) {
+              await supabase
+                .from('user_installed_apps')
+                .update({ status, updated_at: new Date().toISOString() })
+                .eq('id', existingInstall.id);
+            } else {
+              await supabase
+                .from('user_installed_apps')
+                .insert({
+                  catalog_app_id: catalogApp.id,
+                  status,
+                  user_id: currentUser,
+                });
+            }
           }
         }
       } catch (error) {
