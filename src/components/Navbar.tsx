@@ -5,7 +5,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { toast } from 'sonner';
 
 export const Navbar = () => {
-  const { isAuthenticated, logout } = useAuth();
+  const { isAuthenticated, currentUser, logout } = useAuth();
   const navigate = useNavigate();
 
   const handleLogout = () => {
@@ -48,10 +48,15 @@ export const Navbar = () => {
             </Button>
           </Link>
           {isAuthenticated && (
-            <Button variant="ghost" onClick={handleLogout}>
-              <LogOut className="mr-2 h-4 w-4" />
-              Déconnexion
-            </Button>
+            <>
+              <span className="text-sm text-muted-foreground">
+                {currentUser}
+              </span>
+              <Button variant="ghost" onClick={handleLogout}>
+                <LogOut className="mr-2 h-4 w-4" />
+                Déconnexion
+              </Button>
+            </>
           )}
         </div>
       </div>
