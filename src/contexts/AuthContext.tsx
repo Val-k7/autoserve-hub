@@ -8,7 +8,7 @@ interface AuthContextType {
   user: SupabaseUser | null;
   isAdmin: boolean;
   login: (email: string, password: string) => Promise<{ success: boolean; error?: string }>;
-  signup: (email: string, password: string) => Promise<{ success: boolean; error?: string }>;
+  signup: (email: string, password: string, username: string) => Promise<{ success: boolean; error?: string }>;
   logout: () => Promise<void>;
   loading: boolean;
 }
@@ -18,21 +18,47 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<SupabaseUser | null>(null);
   const [loading, setLoading] = useState(true);
+  const [isAdmin, setIsAdmin] = useState(false);
 
   useEffect(() => {
     // Check current session
     supabase.auth.getSession().then(({ data: { session } }) => {
       setUser(session?.user ?? null);
+      if (session?.user) {
+        checkAdminStatus(session.user.id);
+      }
       setLoading(false);
     });
 
     // Listen for auth changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       setUser(session?.user ?? null);
+      if (session?.user) {
+        setTimeout(() => {
+          checkAdminStatus(session.user.id);
+        }, 0);
+      } else {
+        setIsAdmin(false);
+      }
     });
 
     return () => subscription.unsubscribe();
   }, []);
+
+  const checkAdminStatus = async (userId: string) => {
+    try {
+      const { data, error } = await supabase
+        .from('user_roles')
+        .select('role')
+        .eq('user_id', userId)
+        .eq('role', 'admin')
+        .single();
+      
+      setIsAdmin(!!data && !error);
+    } catch (error) {
+      setIsAdmin(false);
+    }
+  };
 
   const login = async (email: string, password: string): Promise<{ success: boolean; error?: string }> => {
     try {
@@ -49,11 +75,17 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     }
   };
 
-  const signup = async (email: string, password: string): Promise<{ success: boolean; error?: string }> => {
+  const signup = async (email: string, password: string, username: string): Promise<{ success: boolean; error?: string }> => {
     try {
       const { data, error } = await supabase.auth.signUp({
         email,
         password,
+        options: {
+          data: {
+            username: username,
+          },
+          emailRedirectTo: `${window.location.origin}/`,
+        },
       });
 
       if (error) throw error;
@@ -72,7 +104,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     isAuthenticated: !!user,
     currentUser: user?.id ?? null,
     user,
-    isAdmin: false, // TODO: Implement role checking when user_roles table is set up
+    isAdmin,
     login,
     signup,
     logout,
