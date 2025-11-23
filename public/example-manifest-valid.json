@@ -1,0 +1,155 @@
+{
+  "version": "1.0.0",
+  "repository": "AutoServe Example Catalog",
+  "description": "Example manifest showing the correct structure for application catalogs",
+  "apps": [
+    {
+      "id": "nextcloud",
+      "name": "Nextcloud",
+      "description": "A safe home for all your data. Access & share your files, calendars, contacts, mail & more from any device.",
+      "icon": "https://raw.githubusercontent.com/nextcloud/server/master/core/img/logo/logo.svg",
+      "category": "productivity",
+      "version": "28.0.0",
+      "author": "Nextcloud GmbH",
+      "website_url": "https://nextcloud.com",
+      "documentation_url": "https://docs.nextcloud.com",
+      "repository_url": "https://github.com/nextcloud/server",
+      "docker_image": "nextcloud:latest",
+      "docker_compose": "version: '3'\nservices:\n  nextcloud:\n    image: nextcloud:latest\n    ports:\n      - \"8080:80\"",
+      "environment_variables": [
+        {
+          "name": "MYSQL_HOST",
+          "description": "MySQL database host",
+          "required": true,
+          "default": "db"
+        },
+        {
+          "name": "MYSQL_DATABASE",
+          "description": "MySQL database name",
+          "required": true,
+          "default": "nextcloud"
+        },
+        {
+          "name": "MYSQL_USER",
+          "description": "MySQL user",
+          "required": true,
+          "default": "nextcloud"
+        },
+        {
+          "name": "MYSQL_PASSWORD",
+          "description": "MySQL password",
+          "required": true
+        }
+      ],
+      "ports": [
+        {
+          "container": 80,
+          "host": 8080,
+          "protocol": "tcp"
+        }
+      ],
+      "volumes": [
+        {
+          "container": "/var/www/html",
+          "host": "/opt/nextcloud/html"
+        },
+        {
+          "container": "/var/www/html/data",
+          "host": "/opt/nextcloud/data"
+        }
+      ],
+      "dependencies": [
+        "mysql:8.0"
+      ]
+    },
+    {
+      "id": "wordpress",
+      "name": "WordPress",
+      "description": "WordPress is open source software you can use to create a beautiful website, blog, or app.",
+      "icon": "https://s.w.org/style/images/about/WordPress-logotype-wmark.png",
+      "category": "cms",
+      "version": "6.4",
+      "author": "WordPress Foundation",
+      "website_url": "https://wordpress.org",
+      "documentation_url": "https://wordpress.org/support/",
+      "repository_url": "https://github.com/WordPress/WordPress",
+      "docker_image": "wordpress:latest",
+      "environment_variables": [
+        {
+          "name": "WORDPRESS_DB_HOST",
+          "description": "Database host",
+          "required": true,
+          "default": "db:3306"
+        },
+        {
+          "name": "WORDPRESS_DB_NAME",
+          "description": "Database name",
+          "required": true,
+          "default": "wordpress"
+        },
+        {
+          "name": "WORDPRESS_DB_USER",
+          "description": "Database user",
+          "required": true,
+          "default": "wordpress"
+        },
+        {
+          "name": "WORDPRESS_DB_PASSWORD",
+          "description": "Database password",
+          "required": true
+        }
+      ],
+      "ports": [
+        {
+          "container": 80,
+          "host": 8081,
+          "protocol": "tcp"
+        }
+      ],
+      "volumes": [
+        {
+          "container": "/var/www/html",
+          "host": "/opt/wordpress/html"
+        }
+      ],
+      "dependencies": [
+        "mysql:8.0"
+      ]
+    },
+    {
+      "id": "portainer",
+      "name": "Portainer",
+      "description": "Portainer is a lightweight management UI which allows you to easily manage your Docker environments.",
+      "icon": "https://www.portainer.io/hubfs/portainer-logo-black.svg",
+      "category": "tools",
+      "version": "2.19.4",
+      "author": "Portainer.io",
+      "website_url": "https://www.portainer.io",
+      "documentation_url": "https://docs.portainer.io",
+      "repository_url": "https://github.com/portainer/portainer",
+      "docker_image": "portainer/portainer-ce:latest",
+      "ports": [
+        {
+          "container": 9000,
+          "host": 9000,
+          "protocol": "tcp"
+        },
+        {
+          "container": 8000,
+          "host": 8000,
+          "protocol": "tcp"
+        }
+      ],
+      "volumes": [
+        {
+          "container": "/data",
+          "host": "/opt/portainer/data"
+        },
+        {
+          "container": "/var/run/docker.sock",
+          "host": "/var/run/docker.sock"
+        }
+      ]
+    }
+  ]
+}
