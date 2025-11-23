@@ -284,6 +284,16 @@ All colors MUST be HSL.
     animation: float 6s ease-in-out infinite;
   }
   
+  /* Shimmer animation for skeleton loaders */
+  .animate-shimmer {
+    animation: shimmer 2s ease-in-out infinite;
+  }
+  
+  /* Ripple animation */
+  .animate-ripple {
+    animation: ripple 600ms ease-out;
+  }
+  
   /* Glow effect */
   .glow {
     box-shadow: 0 0 20px hsl(var(--primary) / 0.3);
@@ -345,6 +355,26 @@ All colors MUST be HSL.
     }
     50% {
       transform: translateY(-20px);
+    }
+  }
+  
+  @keyframes shimmer {
+    0% {
+      background-position: -200% 0;
+    }
+    100% {
+      background-position: 200% 0;
+    }
+  }
+  
+  @keyframes ripple {
+    0% {
+      transform: scale(0);
+      opacity: 1;
+    }
+    100% {
+      transform: scale(4);
+      opacity: 0;
     }
   }
 }

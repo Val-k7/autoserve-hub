@@ -1,7 +1,7 @@
 import * as React from "react";
 import { Slot } from "@radix-ui/react-slot";
 import { cva, type VariantProps } from "class-variance-authority";
-
+import { useRipple, RippleContainer } from "@/components/ui/ripple";
 import { cn } from "@/lib/utils";
 
 const buttonVariants = cva(
@@ -36,12 +36,51 @@ export interface ButtonProps
   extends React.ButtonHTMLAttributes<HTMLButtonElement>,
     VariantProps<typeof buttonVariants> {
   asChild?: boolean;
+  disableRipple?: boolean;
 }
 
 const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
-  ({ className, variant, size, asChild = false, ...props }, ref) => {
+  ({ className, variant, size, asChild = false, disableRipple = false, onClick, ...props }, ref) => {
     const Comp = asChild ? Slot : "button";
-    return <Comp className={cn(buttonVariants({ variant, size, className }))} ref={ref} {...props} />;
+    
+    // Determine ripple color based on variant
+    const getRippleColor = () => {
+      switch (variant) {
+        case 'destructive':
+          return 'rgba(239, 68, 68, 0.4)';
+        case 'success':
+          return 'rgba(34, 197, 94, 0.4)';
+        case 'premium':
+          return 'rgba(168, 85, 247, 0.4)';
+        case 'outline':
+          return 'rgba(59, 130, 246, 0.3)';
+        case 'ghost':
+          return 'rgba(59, 130, 246, 0.2)';
+        default:
+          return 'rgba(255, 255, 255, 0.4)';
+      }
+    };
+    
+    const { ripples, addRipple, duration, color } = useRipple(getRippleColor());
+    
+    const handleClick = (e: React.MouseEvent<HTMLButtonElement>) => {
+      if (!disableRipple) {
+        addRipple(e);
+      }
+      onClick?.(e);
+    };
+    
+    return (
+      <Comp 
+        className={cn(buttonVariants({ variant, size, className }))} 
+        ref={ref} 
+        onClick={handleClick}
+        {...props}
+      >
+        {!disableRipple && <RippleContainer ripples={ripples} duration={duration} color={color} />}
+        {props.children}
+      </Comp>
+    );
   },
 );
 Button.displayName = "Button";
