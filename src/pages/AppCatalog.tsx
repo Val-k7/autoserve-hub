@@ -2,16 +2,16 @@ import { useState } from 'react';
 import { Navbar } from '@/components/Navbar';
 import { CatalogAppCard } from '@/components/CatalogAppCard';
 import { InstallDialog } from '@/components/InstallDialog';
-import { AVAILABLE_APPS } from '@/data/apps';
+import { useAppContext } from '@/contexts/AppContext';
 import { APP_CATEGORIES } from '@/types/app';
-import { App, AppCategory, AppStatus } from '@/types/app';
+import { App, AppCategory } from '@/types/app';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Input } from '@/components/ui/input';
 import { Search } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
 const AppCatalog = () => {
-  const [apps, setApps] = useState<App[]>(AVAILABLE_APPS);
+  const { apps, updateAppStatus, addLog } = useAppContext();
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedApp, setSelectedApp] = useState<App | null>(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -25,9 +25,8 @@ const AppCatalog = () => {
   const handleInstallConfirm = (config: Record<string, string>) => {
     if (!selectedApp) return;
 
-    setApps(apps.map(a => 
-      a.id === selectedApp.id ? { ...a, status: 'installed' as AppStatus, version: '1.0.0' } : a
-    ));
+    updateAppStatus(selectedApp.id, 'installed', '1.0.0');
+    addLog('success', selectedApp.name, `Installation réussie avec la configuration: ${Object.keys(config).join(', ')}`);
     
     toast({
       title: 'Installation réussie',

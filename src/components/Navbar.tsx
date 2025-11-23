@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom';
 import { Button } from './ui/button';
-import { Server, Package } from 'lucide-react';
+import { Server, Package, Settings, ScrollText } from 'lucide-react';
 
 export const Navbar = () => {
   return (
@@ -11,7 +11,7 @@ export const Navbar = () => {
           <span className="text-xl">AutoServe</span>
         </Link>
         
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-2">
           <Link to="/">
             <Button variant="ghost">Accueil</Button>
           </Link>
@@ -22,6 +22,18 @@ export const Navbar = () => {
             <Button variant="ghost">
               <Package className="mr-2 h-4 w-4" />
               Catalogue
+            </Button>
+          </Link>
+          <Link to="/logs">
+            <Button variant="ghost">
+              <ScrollText className="mr-2 h-4 w-4" />
+              Logs
+            </Button>
+          </Link>
+          <Link to="/settings">
+            <Button variant="ghost">
+              <Settings className="mr-2 h-4 w-4" />
+              Configuration
             </Button>
           </Link>
         </div>
