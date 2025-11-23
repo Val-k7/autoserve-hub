@@ -219,27 +219,45 @@ serve(async (req) => {
         const controller = new AbortController();
         const timeoutId = setTimeout(() => controller.abort(), 10000); // 10s timeout
         
-        const response = await fetch(repository.url, {
-          headers: {
-            'Accept': 'application/json',
-            'User-Agent': 'AutoServe-Sync/1.0',
-            'Cache-Control': 'no-cache'
-          },
-          signal: controller.signal
-        });
+        let response;
+        try {
+          response = await fetch(repository.url, {
+            headers: {
+              'Accept': 'application/json, application/vnd.github+json',
+              'User-Agent': 'AutoServe-Sync/1.0',
+              'Cache-Control': 'no-cache'
+            },
+            signal: controller.signal
+          });
+        } catch (fetchErr: any) {
+          clearTimeout(timeoutId);
+          throw new Error(`Échec de connexion à GitHub: ${fetchErr.message}. Vérifiez votre connexion internet et l'URL du repository.`);
+        }
 
         clearTimeout(timeoutId);
 
         if (!response.ok) {
-          throw new Error(`HTTP ${response.status}: ${response.statusText}. Vérifiez que l'URL est correcte et accessible publiquement.`);
+          const errorBody = await response.text().catch(() => 'No error details');
+          console.error('GitHub response error:', { status: response.status, statusText: response.statusText, body: errorBody });
+          throw new Error(`GitHub a retourné une erreur ${response.status}: ${response.statusText}. L'URL "${repository.url}" n'est peut-être pas valide ou le fichier n'existe pas. Détails: ${errorBody.substring(0, 200)}`);
         }
 
         const contentType = response.headers.get('content-type');
-        if (!contentType?.includes('application/json')) {
-          throw new Error(`Type de contenu invalide: ${contentType}. Le fichier doit être un JSON valide.`);
+        console.log('Content-Type:', contentType);
+        
+        // GitHub raw returns text/plain for JSON files
+        if (!contentType?.includes('application/json') && !contentType?.includes('text/plain')) {
+          throw new Error(`Type de contenu invalide: ${contentType}. Le fichier doit être un JSON valide. L'URL pointe peut-être vers une page HTML au lieu d'un fichier JSON brut.`);
         }
 
-        const data = await response.json();
+        let data;
+        try {
+          const responseText = await response.text();
+          console.log('Response preview:', responseText.substring(0, 200));
+          data = JSON.parse(responseText);
+        } catch (parseErr: any) {
+          throw new Error(`Impossible de parser le JSON: ${parseErr.message}. Vérifiez que le fichier contient du JSON valide.`);
+        }
         
         // Support both direct manifest and array of apps
         if (Array.isArray(data)) {
