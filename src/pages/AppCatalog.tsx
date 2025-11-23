@@ -11,7 +11,7 @@ import { Search } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
 const AppCatalog = () => {
-  const { apps, updateAppStatus, addLog } = useAppContext();
+  const { apps, updateAppStatus, addLog, loading } = useAppContext();
   const [searchQuery, setSearchQuery] = useState('');
   const debouncedSearchQuery = useDebounce(searchQuery, 300);
   const [selectedApp, setSelectedApp] = useState<App | null>(null);
@@ -23,10 +23,10 @@ const AppCatalog = () => {
     setIsDialogOpen(true);
   };
 
-  const handleInstallConfirm = (config: Record<string, string>) => {
+  const handleInstallConfirm = async (config: Record<string, string>) => {
     if (!selectedApp) return;
 
-    updateAppStatus(selectedApp.id, 'installed', '1.0.0');
+    await updateAppStatus(selectedApp.id, 'installed', '1.0.0');
     addLog('success', selectedApp.name, `Installation réussie avec la configuration: ${Object.keys(config).join(', ')}`);
     
     toast({
@@ -51,6 +51,17 @@ const AppCatalog = () => {
     }
     return filtered;
   };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen mesh-background flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
+          <p className="text-muted-foreground">Chargement du catalogue...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen mesh-background">
