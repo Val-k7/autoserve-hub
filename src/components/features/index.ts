@@ -15,3 +15,4 @@ export { ThemeSwitcher } from './ThemeSwitcher';
 export { AccessibilitySettings } from './AccessibilitySettings';
 export { InstallDialog } from './InstallDialog';
 export { OptimizedAppList } from './OptimizedAppList';
+export { SessionMonitor } from './SessionMonitor';

@@ -38,6 +38,7 @@ import { Separator } from "@/components/ui/separator";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
+import { SessionMonitor } from "@/components/features/SessionMonitor";
 
 const mainItems = [
   { title: "Accueil", url: "/", icon: Home },
@@ -314,6 +315,13 @@ export function AppSidebar() {
               )}
             </Link>
           </SidebarMenuButton>
+        )}
+
+        {/* Session Monitor */}
+        {!isCollapsed && (
+          <div className="px-2 py-2">
+            <SessionMonitor />
+          </div>
         )}
 
         {/* Theme Toggle */}
