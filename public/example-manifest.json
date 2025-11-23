@@ -1,0 +1,101 @@
+{
+  "apps": [
+    {
+      "id": "jellyfin",
+      "name": "Jellyfin",
+      "description": "Serveur multimédia open-source pour vos films, séries et musiques",
+      "icon": "🎬",
+      "category": "media",
+      "version": "10.8.13",
+      "author": "Jellyfin Team",
+      "website_url": "https://jellyfin.org",
+      "documentation_url": "https://jellyfin.org/docs",
+      "repository_url": "https://github.com/jellyfin/jellyfin",
+      "docker_image": "jellyfin/jellyfin:latest",
+      "docker_compose": "version: '3.8'\nservices:\n  jellyfin:\n    image: jellyfin/jellyfin:latest\n    container_name: jellyfin\n    restart: unless-stopped\n    ports:\n      - \"8096:8096\"\n    volumes:\n      - ./config:/config\n      - ./cache:/cache\n      - ./media:/media",
+      "environment_variables": [
+        {
+          "name": "JELLYFIN_PublishedServerUrl",
+          "description": "URL publique du serveur",
+          "required": false,
+          "default": "http://localhost:8096"
+        }
+      ],
+      "ports": [
+        {
+          "container": 8096,
+          "host": 8096,
+          "protocol": "tcp"
+        }
+      ],
+      "volumes": [
+        {
+          "container": "/config",
+          "host": "./jellyfin/config"
+        },
+        {
+          "container": "/cache",
+          "host": "./jellyfin/cache"
+        },
+        {
+          "container": "/media",
+          "host": "./media"
+        }
+      ],
+      "dependencies": []
+    },
+    {
+      "id": "nextcloud",
+      "name": "Nextcloud",
+      "description": "Suite complète de cloud privé (fichiers, calendrier, contacts)",
+      "icon": "☁️",
+      "category": "cloud",
+      "version": "28.0",
+      "author": "Nextcloud GmbH",
+      "website_url": "https://nextcloud.com",
+      "documentation_url": "https://docs.nextcloud.com",
+      "repository_url": "https://github.com/nextcloud/server",
+      "docker_image": "nextcloud:latest",
+      "docker_compose": "version: '3.8'\nservices:\n  nextcloud:\n    image: nextcloud:latest\n    container_name: nextcloud\n    restart: unless-stopped\n    ports:\n      - \"8080:80\"\n    volumes:\n      - ./data:/var/www/html\n    environment:\n      - MYSQL_HOST=db\n      - MYSQL_DATABASE=nextcloud\n      - MYSQL_USER=nextcloud\n      - MYSQL_PASSWORD=secure_password",
+      "environment_variables": [
+        {
+          "name": "MYSQL_HOST",
+          "description": "Adresse du serveur MySQL",
+          "required": true,
+          "default": "db"
+        },
+        {
+          "name": "MYSQL_DATABASE",
+          "description": "Nom de la base de données",
+          "required": true,
+          "default": "nextcloud"
+        },
+        {
+          "name": "MYSQL_USER",
+          "description": "Utilisateur MySQL",
+          "required": true,
+          "default": "nextcloud"
+        },
+        {
+          "name": "MYSQL_PASSWORD",
+          "description": "Mot de passe MySQL",
+          "required": true
+        }
+      ],
+      "ports": [
+        {
+          "container": 80,
+          "host": 8080,
+          "protocol": "tcp"
+        }
+      ],
+      "volumes": [
+        {
+          "container": "/var/www/html",
+          "host": "./nextcloud/data"
+        }
+      ],
+      "dependencies": ["mysql"]
+    }
+  ]
+}
