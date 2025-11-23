@@ -14,7 +14,175 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      catalog_apps: {
+        Row: {
+          app_id: string
+          author: string | null
+          category: string | null
+          created_at: string | null
+          dependencies: Json | null
+          description: string | null
+          docker_compose: string | null
+          docker_image: string | null
+          documentation_url: string | null
+          environment_variables: Json | null
+          icon: string | null
+          id: string
+          manifest_data: Json | null
+          name: string
+          ports: Json | null
+          repository_id: string
+          repository_url: string | null
+          updated_at: string | null
+          version: string | null
+          volumes: Json | null
+          website_url: string | null
+        }
+        Insert: {
+          app_id: string
+          author?: string | null
+          category?: string | null
+          created_at?: string | null
+          dependencies?: Json | null
+          description?: string | null
+          docker_compose?: string | null
+          docker_image?: string | null
+          documentation_url?: string | null
+          environment_variables?: Json | null
+          icon?: string | null
+          id?: string
+          manifest_data?: Json | null
+          name: string
+          ports?: Json | null
+          repository_id: string
+          repository_url?: string | null
+          updated_at?: string | null
+          version?: string | null
+          volumes?: Json | null
+          website_url?: string | null
+        }
+        Update: {
+          app_id?: string
+          author?: string | null
+          category?: string | null
+          created_at?: string | null
+          dependencies?: Json | null
+          description?: string | null
+          docker_compose?: string | null
+          docker_image?: string | null
+          documentation_url?: string | null
+          environment_variables?: Json | null
+          icon?: string | null
+          id?: string
+          manifest_data?: Json | null
+          name?: string
+          ports?: Json | null
+          repository_id?: string
+          repository_url?: string | null
+          updated_at?: string | null
+          version?: string | null
+          volumes?: Json | null
+          website_url?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "catalog_apps_repository_id_fkey"
+            columns: ["repository_id"]
+            isOneToOne: false
+            referencedRelation: "repositories"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      repositories: {
+        Row: {
+          added_by: string | null
+          created_at: string | null
+          description: string | null
+          id: string
+          is_enabled: boolean | null
+          is_official: boolean | null
+          last_synced_at: string | null
+          name: string
+          sync_error: string | null
+          sync_status: string | null
+          type: string
+          updated_at: string | null
+          url: string
+        }
+        Insert: {
+          added_by?: string | null
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          is_enabled?: boolean | null
+          is_official?: boolean | null
+          last_synced_at?: string | null
+          name: string
+          sync_error?: string | null
+          sync_status?: string | null
+          type?: string
+          updated_at?: string | null
+          url: string
+        }
+        Update: {
+          added_by?: string | null
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          is_enabled?: boolean | null
+          is_official?: boolean | null
+          last_synced_at?: string | null
+          name?: string
+          sync_error?: string | null
+          sync_status?: string | null
+          type?: string
+          updated_at?: string | null
+          url?: string
+        }
+        Relationships: []
+      }
+      user_installed_apps: {
+        Row: {
+          catalog_app_id: string
+          configuration: Json | null
+          container_id: string | null
+          id: string
+          installed_at: string | null
+          status: string
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          catalog_app_id: string
+          configuration?: Json | null
+          container_id?: string | null
+          id?: string
+          installed_at?: string | null
+          status?: string
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          catalog_app_id?: string
+          configuration?: Json | null
+          container_id?: string | null
+          id?: string
+          installed_at?: string | null
+          status?: string
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_installed_apps_catalog_app_id_fkey"
+            columns: ["catalog_app_id"]
+            isOneToOne: false
+            referencedRelation: "catalog_apps"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
