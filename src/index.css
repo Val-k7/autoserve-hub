@@ -138,6 +138,20 @@ All colors MUST be HSL.
       0 8px 16px hsl(0 84% 60% / 0.4);
   }
   
+  /* Pulse glow animation */
+  @keyframes pulse-glow {
+    0%, 100% {
+      box-shadow: 0 0 10px currentColor;
+    }
+    50% {
+      box-shadow: 0 0 20px currentColor, 0 0 30px currentColor;
+    }
+  }
+  
+  .animate-pulse-glow {
+    animation: pulse-glow 2s ease-in-out infinite;
+  }
+  
   /* Hover effects with 3D transforms */
   .hover-lift {
     @apply transition-all duration-300 hover:scale-105;
