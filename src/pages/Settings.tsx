@@ -7,10 +7,12 @@ import { ThemeSwitcher } from '@/components/features/ThemeSwitcher';
 import { AccessibilitySettings } from '@/components/features/AccessibilitySettings';
 import { RepositoryManager } from '@/components/features/RepositoryManager';
 import { useToast } from '@/hooks/use-toast';
+import { useAuth } from '@/contexts/AuthContext';
 import { Save, FolderOpen, Globe, Lock } from 'lucide-react';
 
 const Settings = () => {
   const { toast } = useToast();
+  const { isAdmin } = useAuth();
   const [settings, setSettings] = useState({
     installPath: '/opt/autoserve',
     dataPath: '/var/lib/autoserve',
@@ -48,11 +50,11 @@ const Settings = () => {
         </div>
 
         <div className="space-y-6">
-          {/* Repository Manager */}
-          <RepositoryManager />
+          {/* Repository Manager - Admin only */}
+          {isAdmin && <RepositoryManager />}
 
-          {/* Chemins d'installation */}
-          <Card className="glass-card hover:shadow-2xl transition-all duration-500 border-primary/20 animate-scale-in hover-lift">
+          {/* Chemins d'installation - Admin only */}
+          {isAdmin && <Card className="glass-card hover:shadow-2xl transition-all duration-500 border-primary/20 animate-scale-in hover-lift">
             <CardHeader className="bg-gradient-to-r from-primary/5 to-accent/5 rounded-t-2xl">
               <CardTitle className="flex items-center gap-3 text-2xl">
                 <div className="p-3 rounded-xl bg-gradient-to-br from-blue-500 to-cyan-500 shadow-xl button-texture-primary">
@@ -84,10 +86,10 @@ const Settings = () => {
                 />
               </div>
             </CardContent>
-          </Card>
+          </Card>}
 
-          {/* Configuration réseau */}
-          <Card className="glass-card hover:shadow-2xl transition-all duration-500 border-primary/20 animate-scale-in hover-lift" style={{ animationDelay: '0.1s' }}>
+          {/* Configuration réseau - Admin only */}
+          {isAdmin && <Card className="glass-card hover:shadow-2xl transition-all duration-500 border-primary/20 animate-scale-in hover-lift" style={{ animationDelay: '0.1s' }}>
             <CardHeader className="bg-gradient-to-r from-primary/5 to-accent/5 rounded-t-2xl">
               <CardTitle className="flex items-center gap-3 text-2xl">
                 <div className="p-3 rounded-xl bg-gradient-to-br from-green-500 to-emerald-500 shadow-xl button-texture-success">
@@ -111,10 +113,10 @@ const Settings = () => {
                 />
               </div>
             </CardContent>
-          </Card>
+          </Card>}
 
-          {/* Certificats HTTPS */}
-          <Card className="glass-card hover:shadow-2xl transition-all duration-500 border-primary/20 animate-scale-in hover-lift" style={{ animationDelay: '0.2s' }}>
+          {/* Certificats HTTPS - Admin only */}
+          {isAdmin && <Card className="glass-card hover:shadow-2xl transition-all duration-500 border-primary/20 animate-scale-in hover-lift" style={{ animationDelay: '0.2s' }}>
             <CardHeader className="bg-gradient-to-r from-primary/5 to-accent/5 rounded-t-2xl">
               <CardTitle className="flex items-center gap-3 text-2xl">
                 <div className="p-3 rounded-xl bg-gradient-to-br from-orange-500 to-red-500 shadow-xl button-texture-destructive">
@@ -146,7 +148,7 @@ const Settings = () => {
                 />
               </div>
             </CardContent>
-          </Card>
+          </Card>}
 
           {/* Theme Switcher */}
           <ThemeSwitcher />
@@ -154,9 +156,9 @@ const Settings = () => {
           {/* Accessibility Settings */}
           <AccessibilitySettings />
 
-          {/* Save Button */}
-          <div className="flex justify-end animate-fade-in" style={{ animationDelay: '0.4s' }}>
-            <Button 
+          {/* Save Button - Admin only */}
+          {isAdmin && <div className="flex justify-end animate-fade-in" style={{ animationDelay: '0.4s' }}>
+            <Button
               onClick={handleSave} 
               size="lg"
               className="px-8 button-texture-primary"
@@ -164,7 +166,7 @@ const Settings = () => {
               <Save className="mr-2 h-5 w-5" />
               Sauvegarder les modifications
             </Button>
-          </div>
+          </div>}
         </div>
       </div>
     </div>
