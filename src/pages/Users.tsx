@@ -6,16 +6,11 @@ import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
-import { Users as UsersIcon, UserX, Shield } from 'lucide-react';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Users as UsersIcon, UserX, Shield, User as UserIcon } from 'lucide-react';
 import { toast } from 'sonner';
-import { useAuth } from '@/contexts/AuthContext';
+import { useAuth, User, UserRole, getUsers, saveUsers } from '@/contexts/AuthContext';
 
-interface User {
-  username: string;
-  password: string;
-}
-
-const USERS_STORAGE_KEY = 'autoserve_users';
 const SIGNUP_ENABLED_KEY = 'autoserve_signup_enabled';
 
 const Users = () => {
@@ -31,10 +26,7 @@ const Users = () => {
   }, []);
 
   const loadUsers = () => {
-    const stored = localStorage.getItem(USERS_STORAGE_KEY);
-    if (stored) {
-      setUsers(JSON.parse(stored));
-    }
+    setUsers(getUsers());
   };
 
   const handleDeleteUser = (username: string) => {
@@ -49,9 +41,28 @@ const Users = () => {
     }
 
     const updatedUsers = users.filter(u => u.username !== username);
-    localStorage.setItem(USERS_STORAGE_KEY, JSON.stringify(updatedUsers));
+    saveUsers(updatedUsers);
     setUsers(updatedUsers);
     toast.success(`Utilisateur ${username} supprimé`);
+  };
+
+  const handleChangeRole = (username: string, newRole: UserRole) => {
+    if (username === 'admin') {
+      toast.error('Impossible de modifier le rôle du compte admin');
+      return;
+    }
+
+    if (username === currentUser) {
+      toast.error('Impossible de modifier votre propre rôle');
+      return;
+    }
+
+    const updatedUsers = users.map(u => 
+      u.username === username ? { ...u, role: newRole } : u
+    );
+    saveUsers(updatedUsers);
+    setUsers(updatedUsers);
+    toast.success(`Rôle de ${username} modifié en ${newRole === 'admin' ? 'Administrateur' : 'Utilisateur'}`);
   };
 
   const handleToggleSignup = (enabled: boolean) => {
@@ -128,7 +139,7 @@ const Users = () => {
                 <TableHeader>
                   <TableRow>
                     <TableHead>Nom d'utilisateur</TableHead>
-                    <TableHead>Type</TableHead>
+                    <TableHead>Rôle</TableHead>
                     <TableHead className="text-right">Actions</TableHead>
                   </TableRow>
                 </TableHeader>
@@ -137,13 +148,43 @@ const Users = () => {
                     <TableRow key={user.username}>
                       <TableCell className="font-medium">{user.username}</TableCell>
                       <TableCell>
-                        {user.username === 'admin' ? (
-                          <span className="inline-flex items-center gap-1 text-sm text-primary">
-                            <Shield className="h-4 w-4" />
-                            Administrateur
+                        {user.username === 'admin' || user.username === currentUser ? (
+                          <span className="inline-flex items-center gap-1 text-sm">
+                            {user.role === 'admin' ? (
+                              <>
+                                <Shield className="h-4 w-4 text-primary" />
+                                <span className="text-primary">Administrateur</span>
+                              </>
+                            ) : (
+                              <>
+                                <UserIcon className="h-4 w-4 text-muted-foreground" />
+                                <span className="text-muted-foreground">Utilisateur</span>
+                              </>
+                            )}
                           </span>
                         ) : (
-                          <span className="text-sm text-muted-foreground">Utilisateur</span>
+                          <Select
+                            value={user.role}
+                            onValueChange={(value: UserRole) => handleChangeRole(user.username, value)}
+                          >
+                            <SelectTrigger className="w-[180px]">
+                              <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="user">
+                                <span className="flex items-center gap-2">
+                                  <UserIcon className="h-4 w-4" />
+                                  Utilisateur
+                                </span>
+                              </SelectItem>
+                              <SelectItem value="admin">
+                                <span className="flex items-center gap-2">
+                                  <Shield className="h-4 w-4" />
+                                  Administrateur
+                                </span>
+                              </SelectItem>
+                            </SelectContent>
+                          </Select>
                         )}
                       </TableCell>
                       <TableCell className="text-right">
