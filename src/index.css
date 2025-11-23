@@ -377,4 +377,69 @@ All colors MUST be HSL.
       opacity: 0;
     }
   }
+  
+  /* Accessibility Styles */
+  
+  /* High Contrast Mode */
+  .high-contrast {
+    --background: 0 0% 100%;
+    --foreground: 0 0% 0%;
+    --border: 0 0% 20%;
+    --muted-foreground: 0 0% 30%;
+  }
+  
+  .dark.high-contrast {
+    --background: 0 0% 0%;
+    --foreground: 0 0% 100%;
+    --border: 0 0% 80%;
+    --muted-foreground: 0 0% 70%;
+  }
+  
+  .high-contrast * {
+    border-width: 2px !important;
+  }
+  
+  /* Reduced Motion */
+  .reduce-motion *,
+  .reduce-motion *::before,
+  .reduce-motion *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+  
+  /* Enhanced Focus Visible */
+  .focus-visible-enhanced *:focus-visible {
+    outline: 3px solid hsl(var(--primary)) !important;
+    outline-offset: 3px !important;
+    border-radius: 4px;
+  }
+  
+  .focus-visible-enhanced button:focus-visible,
+  .focus-visible-enhanced a:focus-visible,
+  .focus-visible-enhanced input:focus-visible,
+  .focus-visible-enhanced textarea:focus-visible,
+  .focus-visible-enhanced select:focus-visible {
+    box-shadow: 
+      0 0 0 3px hsl(var(--background)),
+      0 0 0 6px hsl(var(--primary)),
+      0 0 20px hsl(var(--primary) / 0.5) !important;
+  }
+  
+  /* Skip to main content link for screen readers */
+  .skip-to-main {
+    position: absolute;
+    left: -9999px;
+    z-index: 999;
+    padding: 1rem 1.5rem;
+    background-color: hsl(var(--primary));
+    color: hsl(var(--primary-foreground));
+    text-decoration: none;
+    border-radius: 0.5rem;
+  }
+  
+  .skip-to-main:focus {
+    left: 1rem;
+    top: 1rem;
+  }
 }

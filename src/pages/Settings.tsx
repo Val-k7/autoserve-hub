@@ -3,6 +3,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
+import { ThemeSwitcher } from '@/components/ThemeSwitcher';
+import { AccessibilitySettings } from '@/components/AccessibilitySettings';
 import { useToast } from '@/hooks/use-toast';
 import { Save, FolderOpen, Globe, Lock } from 'lucide-react';
 
@@ -142,8 +144,14 @@ const Settings = () => {
             </CardContent>
           </Card>
 
+          {/* Theme Switcher */}
+          <ThemeSwitcher />
+
+          {/* Accessibility Settings */}
+          <AccessibilitySettings />
+
           {/* Save Button */}
-          <div className="flex justify-end animate-fade-in" style={{ animationDelay: '0.3s' }}>
+          <div className="flex justify-end animate-fade-in" style={{ animationDelay: '0.4s' }}>
             <Button 
               onClick={handleSave} 
               size="lg"
