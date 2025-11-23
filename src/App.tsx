@@ -11,6 +11,7 @@ import Dashboard from "./pages/Dashboard";
 import AppCatalog from "./pages/AppCatalog";
 import Settings from "./pages/Settings";
 import Logs from "./pages/Logs";
+import Users from "./pages/Users";
 import Login from "./pages/Login";
 import NotFound from "./pages/NotFound";
 
@@ -31,6 +32,7 @@ const App = () => (
               <Route path="/catalog" element={<ProtectedRoute><AppCatalog /></ProtectedRoute>} />
               <Route path="/settings" element={<ProtectedRoute><Settings /></ProtectedRoute>} />
               <Route path="/logs" element={<ProtectedRoute><Logs /></ProtectedRoute>} />
+              <Route path="/users" element={<ProtectedRoute><Users /></ProtectedRoute>} />
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
               <Route path="*" element={<NotFound />} />
             </Routes>

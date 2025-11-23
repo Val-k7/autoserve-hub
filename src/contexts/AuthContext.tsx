@@ -17,6 +17,7 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 const USERS_STORAGE_KEY = 'autoserve_users';
 const CURRENT_USER_KEY = 'autoserve_current_user';
+const SIGNUP_ENABLED_KEY = 'autoserve_signup_enabled';
 
 // Fonction simple d'encodage (note: ce n'est PAS sécurisé pour la production)
 const simpleHash = (str: string): string => {
@@ -74,6 +75,12 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   };
 
   const signup = (username: string, password: string): { success: boolean; error?: string } => {
+    // Vérifier si les inscriptions sont activées
+    const signupEnabled = localStorage.getItem(SIGNUP_ENABLED_KEY);
+    if (signupEnabled === 'false') {
+      return { success: false, error: 'Les inscriptions sont actuellement désactivées' };
+    }
+
     if (!username.trim() || !password.trim()) {
       return { success: false, error: 'Nom d\'utilisateur et mot de passe requis' };
     }

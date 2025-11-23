@@ -1,6 +1,6 @@
 import { Link, useNavigate } from 'react-router-dom';
 import { Button } from './ui/button';
-import { Server, Package, Settings, ScrollText, LogOut } from 'lucide-react';
+import { Server, Package, Settings, ScrollText, LogOut, Users } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { toast } from 'sonner';
 
@@ -39,6 +39,12 @@ export const Navbar = () => {
             <Button variant="ghost">
               <ScrollText className="mr-2 h-4 w-4" />
               Logs
+            </Button>
+          </Link>
+          <Link to="/users">
+            <Button variant="ghost">
+              <Users className="mr-2 h-4 w-4" />
+              Utilisateurs
             </Button>
           </Link>
           <Link to="/settings">
