@@ -1,13 +1,18 @@
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 
-interface User {
+export type UserRole = 'admin' | 'user';
+
+export interface User {
   username: string;
   password: string;
+  role: UserRole;
 }
 
 interface AuthContextType {
   isAuthenticated: boolean;
   currentUser: string | null;
+  userRole: UserRole | null;
+  isAdmin: boolean;
   login: (username: string, password: string) => { success: boolean; error?: string };
   signup: (username: string, password: string) => { success: boolean; error?: string };
   logout: () => void;
@@ -19,18 +24,24 @@ const USERS_STORAGE_KEY = 'autoserve_users';
 const CURRENT_USER_KEY = 'autoserve_current_user';
 const SIGNUP_ENABLED_KEY = 'autoserve_signup_enabled';
 
-// Fonction simple d'encodage (note: ce n'est PAS sécurisé pour la production)
-const simpleHash = (str: string): string => {
-  return btoa(str);
-};
-
-const getUsers = (): User[] => {
+export const getUsers = (): User[] => {
   const stored = localStorage.getItem(USERS_STORAGE_KEY);
   return stored ? JSON.parse(stored) : [];
 };
 
-const saveUsers = (users: User[]) => {
+export const saveUsers = (users: User[]) => {
   localStorage.setItem(USERS_STORAGE_KEY, JSON.stringify(users));
+};
+
+export const getUserRole = (username: string): UserRole | null => {
+  const users = getUsers();
+  const user = users.find(u => u.username === username);
+  return user?.role || null;
+};
+
+// Fonction simple d'encodage (note: ce n'est PAS sécurisé pour la production)
+const simpleHash = (str: string): string => {
+  return btoa(str);
 };
 
 // Créer un utilisateur admin par défaut si aucun utilisateur n'existe
@@ -39,9 +50,26 @@ const initializeDefaultUser = () => {
   if (users.length === 0) {
     const defaultUser: User = {
       username: 'admin',
-      password: simpleHash('admin123')
+      password: simpleHash('admin123'),
+      role: 'admin'
     };
     saveUsers([defaultUser]);
+  } else {
+    // Migration: ajouter le rôle aux utilisateurs existants
+    let needsUpdate = false;
+    const updatedUsers = users.map(user => {
+      if (!user.role) {
+        needsUpdate = true;
+        return { 
+          ...user, 
+          role: (user.username === 'admin' ? 'admin' : 'user') as UserRole 
+        };
+      }
+      return user;
+    });
+    if (needsUpdate) {
+      saveUsers(updatedUsers);
+    }
   }
 };
 
@@ -50,7 +78,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     return localStorage.getItem(CURRENT_USER_KEY);
   });
 
+  const userRole = currentUser ? getUserRole(currentUser) : null;
   const isAuthenticated = currentUser !== null;
+  const isAdmin = userRole === 'admin';
 
   useEffect(() => {
     initializeDefaultUser();
@@ -101,7 +131,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
     const newUser: User = {
       username,
-      password: simpleHash(password)
+      password: simpleHash(password),
+      role: 'user'
     };
 
     saveUsers([...users, newUser]);
@@ -117,7 +148,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ isAuthenticated, currentUser, login, signup, logout }}>
+    <AuthContext.Provider value={{ isAuthenticated, currentUser, userRole, isAdmin, login, signup, logout }}>
       {children}
     </AuthContext.Provider>
   );

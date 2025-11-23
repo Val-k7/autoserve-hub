@@ -6,6 +6,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AppProvider } from "./contexts/AppContext";
 import { AuthProvider } from "./contexts/AuthContext";
 import { ProtectedRoute } from "./components/ProtectedRoute";
+import { AdminRoute } from "./components/AdminRoute";
 import Home from "./pages/Home";
 import Dashboard from "./pages/Dashboard";
 import AppCatalog from "./pages/AppCatalog";
@@ -30,9 +31,9 @@ const App = () => (
               <Route path="/" element={<ProtectedRoute><Home /></ProtectedRoute>} />
               <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
               <Route path="/catalog" element={<ProtectedRoute><AppCatalog /></ProtectedRoute>} />
-              <Route path="/settings" element={<ProtectedRoute><Settings /></ProtectedRoute>} />
               <Route path="/logs" element={<ProtectedRoute><Logs /></ProtectedRoute>} />
-              <Route path="/users" element={<ProtectedRoute><Users /></ProtectedRoute>} />
+              <Route path="/settings" element={<AdminRoute><Settings /></AdminRoute>} />
+              <Route path="/users" element={<AdminRoute><Users /></AdminRoute>} />
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
               <Route path="*" element={<NotFound />} />
             </Routes>

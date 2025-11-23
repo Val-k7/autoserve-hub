@@ -5,7 +5,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { toast } from 'sonner';
 
 export const Navbar = () => {
-  const { isAuthenticated, currentUser, logout } = useAuth();
+  const { isAuthenticated, currentUser, userRole, isAdmin, logout } = useAuth();
   const navigate = useNavigate();
 
   const handleLogout = () => {
@@ -41,23 +41,30 @@ export const Navbar = () => {
               Logs
             </Button>
           </Link>
-          <Link to="/users">
-            <Button variant="ghost">
-              <Users className="mr-2 h-4 w-4" />
-              Utilisateurs
-            </Button>
-          </Link>
-          <Link to="/settings">
-            <Button variant="ghost">
-              <Settings className="mr-2 h-4 w-4" />
-              Configuration
-            </Button>
-          </Link>
+          {isAdmin && (
+            <>
+              <Link to="/users">
+                <Button variant="ghost">
+                  <Users className="mr-2 h-4 w-4" />
+                  Utilisateurs
+                </Button>
+              </Link>
+              <Link to="/settings">
+                <Button variant="ghost">
+                  <Settings className="mr-2 h-4 w-4" />
+                  Configuration
+                </Button>
+              </Link>
+            </>
+          )}
           {isAuthenticated && (
             <>
-              <span className="text-sm text-muted-foreground">
-                {currentUser}
-              </span>
+              <div className="flex flex-col items-end">
+                <span className="text-sm font-medium">{currentUser}</span>
+                <span className="text-xs text-muted-foreground">
+                  {userRole === 'admin' ? 'Administrateur' : 'Utilisateur'}
+                </span>
+              </div>
               <Button variant="ghost" onClick={handleLogout}>
                 <LogOut className="mr-2 h-4 w-4" />
                 Déconnexion
