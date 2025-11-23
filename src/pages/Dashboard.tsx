@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
-import { AppCard } from '@/components/AppCard';
-import { SystemMetricsChart } from '@/components/SystemMetricsChart';
-import { ActivityTimeline } from '@/components/ActivityTimeline';
+import { AppCard } from '@/components/features/AppCard';
+import { SystemMetricsChart } from '@/components/features/SystemMetricsChart';
+import { ActivityTimeline } from '@/components/features/ActivityTimeline';
 import { useAppContext } from '@/contexts/AppContext';
 import { App } from '@/types/app';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';

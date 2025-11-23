@@ -1,4 +1,4 @@
-import { Badge } from './ui/badge';
+import { Badge } from '@/components/ui/badge';
 import { AppStatus } from '@/types/app';
 import { Circle } from 'lucide-react';
 
