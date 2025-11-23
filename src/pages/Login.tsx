@@ -169,7 +169,7 @@ const Login = () => {
 
                 <div className="p-3 rounded-lg bg-primary/5 border border-primary/20">
                   <p className="text-xs text-muted-foreground">
-                    💡 Compte par défaut: <span className="font-mono font-semibold">admin / admin123</span>
+                    💡 Première fois ? Créez un compte via l'onglet <span className="font-semibold">"Créer un compte"</span>
                   </p>
                 </div>
 
