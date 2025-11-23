@@ -5,57 +5,77 @@ import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/hooks/use-toast';
-import { UserCircle, Mail, Lock, Save, Shield } from 'lucide-react';
+import { UserCircle, Mail, Lock, Save } from 'lucide-react';
+import { supabase } from '@/integrations/supabase/client';
 
 const Profile = () => {
-  const { currentUser, updateProfile, userRole } = useAuth();
+  const { user } = useAuth();
   const { toast } = useToast();
   
-  const [username, setUsername] = useState(currentUser || '');
-  const [email, setEmail] = useState('');
-  const [currentPassword, setCurrentPassword] = useState('');
+  const [email, setEmail] = useState(user?.email || '');
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
 
-  const handleUpdateProfile = () => {
-    if (username.trim().length < 3) {
+  const handleUpdateProfile = async () => {
+    setIsLoading(true);
+
+    try {
+      // Update email if changed
+      if (email !== user?.email) {
+        const { error: emailError } = await supabase.auth.updateUser({
+          email: email,
+        });
+        
+        if (emailError) throw emailError;
+      }
+
+      // Update password if provided
+      if (newPassword) {
+        if (newPassword !== confirmPassword) {
+          toast({
+            title: 'Erreur',
+            description: 'Les mots de passe ne correspondent pas',
+            variant: 'destructive',
+          });
+          setIsLoading(false);
+          return;
+        }
+
+        if (newPassword.length < 6) {
+          toast({
+            title: 'Erreur',
+            description: 'Le mot de passe doit contenir au moins 6 caractères',
+            variant: 'destructive',
+          });
+          setIsLoading(false);
+          return;
+        }
+
+        const { error: passwordError } = await supabase.auth.updateUser({
+          password: newPassword,
+        });
+        
+        if (passwordError) throw passwordError;
+      }
+      
+      toast({
+        title: 'Profil mis à jour',
+        description: 'Vos informations ont été enregistrées avec succès',
+      });
+
+      // Reset password fields
+      setNewPassword('');
+      setConfirmPassword('');
+    } catch (error: any) {
       toast({
         title: 'Erreur',
-        description: 'Le nom d\'utilisateur doit contenir au moins 3 caractères',
+        description: error.message || 'Impossible de mettre à jour le profil',
         variant: 'destructive',
       });
-      return;
+    } finally {
+      setIsLoading(false);
     }
-
-    if (newPassword && newPassword !== confirmPassword) {
-      toast({
-        title: 'Erreur',
-        description: 'Les mots de passe ne correspondent pas',
-        variant: 'destructive',
-      });
-      return;
-    }
-
-    if (newPassword && newPassword.length < 6) {
-      toast({
-        title: 'Erreur',
-        description: 'Le mot de passe doit contenir au moins 6 caractères',
-        variant: 'destructive',
-      });
-      return;
-    }
-
-    updateProfile(username, email, newPassword);
-    
-    toast({
-      title: 'Profil mis à jour',
-      description: 'Vos informations ont été enregistrées avec succès',
-    });
-
-    // Reset password fields
-    setCurrentPassword('');
-    setNewPassword('');
-    setConfirmPassword('');
   };
 
   return (
@@ -80,31 +100,10 @@ const Profile = () => {
               Informations du compte
             </CardTitle>
             <CardDescription className="text-base">
-              Mettez à jour votre nom d'utilisateur et email
+              Mettez à jour votre email
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-6 pt-6">
-            <div className="flex items-center gap-4 p-4 rounded-xl bg-gradient-to-r from-primary/10 to-accent/10 border border-primary/20">
-              <div className="p-3 rounded-lg bg-gradient-to-br from-primary/20 to-accent/20">
-                <Shield className="h-6 w-6 text-primary" />
-              </div>
-              <div>
-                <p className="text-sm text-muted-foreground">Rôle actuel</p>
-                <p className="text-lg font-bold capitalize">{userRole}</p>
-              </div>
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="username" className="text-base font-medium">Nom d'utilisateur</Label>
-              <Input
-                id="username"
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
-                className="border-primary/20 focus:border-primary transition-colors h-12 text-base"
-                placeholder="Votre nom d'utilisateur"
-              />
-            </div>
-
             <div className="space-y-2">
               <Label htmlFor="email" className="text-base font-medium">Email</Label>
               <div className="relative">
@@ -137,18 +136,6 @@ const Profile = () => {
           </CardHeader>
           <CardContent className="space-y-6 pt-6">
             <div className="space-y-2">
-              <Label htmlFor="currentPassword" className="text-base font-medium">Mot de passe actuel</Label>
-              <Input
-                id="currentPassword"
-                type="password"
-                value={currentPassword}
-                onChange={(e) => setCurrentPassword(e.target.value)}
-                className="border-primary/20 focus:border-primary transition-colors h-12 text-base"
-                placeholder="••••••••"
-              />
-            </div>
-
-            <div className="space-y-2">
               <Label htmlFor="newPassword" className="text-base font-medium">Nouveau mot de passe</Label>
               <Input
                 id="newPassword"
@@ -180,10 +167,11 @@ const Profile = () => {
           <Button 
             onClick={handleUpdateProfile} 
             size="lg"
+            disabled={isLoading}
             className="gradient-primary hover:opacity-90 shadow-xl hover:shadow-2xl transition-all duration-300 hover:scale-105 px-8"
           >
             <Save className="mr-2 h-5 w-5" />
-            Sauvegarder les modifications
+            {isLoading ? 'Enregistrement...' : 'Sauvegarder les modifications'}
           </Button>
         </div>
       </div>

@@ -28,7 +28,7 @@ const Login = () => {
 
     await new Promise(resolve => setTimeout(resolve, 1000));
 
-    const result = login(loginUsername, loginPassword);
+    const result = await login(loginUsername, loginPassword);
     if (result.success) {
       toast.success("Connexion réussie");
       navigate("/dashboard");
@@ -50,7 +50,7 @@ const Login = () => {
 
     await new Promise(resolve => setTimeout(resolve, 1000));
 
-    const result = signup(signupUsername, signupPassword);
+    const result = await signup(signupUsername, signupPassword);
     if (result.success) {
       toast.success("Compte créé avec succès");
       navigate("/dashboard");
