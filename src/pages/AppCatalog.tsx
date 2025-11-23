@@ -1,6 +1,6 @@
 import { useState } from 'react';
-import { CatalogAppCard } from '@/components/CatalogAppCard';
-import { InstallDialog } from '@/components/InstallDialog';
+import { CatalogAppCard } from '@/components/features/CatalogAppCard';
+import { InstallDialog } from '@/components/features/InstallDialog';
 import { useAppContext } from '@/contexts/AppContext';
 import { useDebounce } from '@/hooks/useDebounce';
 import { APP_CATEGORIES } from '@/types/app';

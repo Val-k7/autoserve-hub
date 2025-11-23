@@ -6,9 +6,9 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AppProvider } from "./contexts/AppContext";
 import { AuthProvider } from "./contexts/AuthContext";
 import { ThemeProvider } from "./contexts/ThemeContext";
-import { ProtectedRoute } from "./components/ProtectedRoute";
-import { AdminRoute } from "./components/AdminRoute";
-import { Layout } from "./components/Layout";
+import { ProtectedRoute } from "./components/guards/ProtectedRoute";
+import { AdminRoute } from "./components/guards/AdminRoute";
+import { Layout } from "./components/layouts/Layout";
 import { lazy, Suspense } from "react";
 import { SkeletonCard } from "./components/ui/skeleton";
 

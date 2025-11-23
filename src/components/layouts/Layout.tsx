@@ -1,6 +1,6 @@
 import { ReactNode } from 'react';
 import { SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar';
-import { AppSidebar } from '@/components/AppSidebar';
+import { AppSidebar } from '@/components/layouts/AppSidebar';
 import { Menu } from 'lucide-react';
 
 interface LayoutProps {

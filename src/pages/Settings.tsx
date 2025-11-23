@@ -3,8 +3,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
-import { ThemeSwitcher } from '@/components/ThemeSwitcher';
-import { AccessibilitySettings } from '@/components/AccessibilitySettings';
+import { ThemeSwitcher } from '@/components/features/ThemeSwitcher';
+import { AccessibilitySettings } from '@/components/features/AccessibilitySettings';
 import { useToast } from '@/hooks/use-toast';
 import { Save, FolderOpen, Globe, Lock } from 'lucide-react';
 

@@ -3,8 +3,8 @@ import { Button } from '@/components/ui/button';
 import { useAppContext } from '@/contexts/AppContext';
 import { Server, Package, Activity, ArrowRight, Sparkles, Zap, Shield, TrendingUp } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import { StatsCard } from '@/components/StatsCard';
-import { QuickActions } from '@/components/QuickActions';
+import { StatsCard } from '@/components/features/StatsCard';
+import { QuickActions } from '@/components/features/QuickActions';
 
 const Home = () => {
   const { apps, logs } = useAppContext();

@@ -1,6 +1,6 @@
 import { useEffect, useState, useRef } from 'react';
 import { App } from '@/types/app';
-import { AppCard } from './AppCard';
+import { AppCard } from '@/components/features/AppCard';
 
 interface OptimizedAppListProps {
   apps: App[];

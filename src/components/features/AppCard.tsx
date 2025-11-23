@@ -1,6 +1,6 @@
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from './ui/card';
-import { Button } from './ui/button';
-import { StatusBadge } from './StatusBadge';
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { StatusBadge } from '@/components/features/StatusBadge';
 import { App } from '@/types/app';
 import { Play, Square, Download, Trash2, ExternalLink, Zap, Power } from 'lucide-react';
 
