@@ -1,11 +1,9 @@
-import { Navbar } from '@/components/Navbar';
 import { AppCard } from '@/components/AppCard';
 import { useAppContext } from '@/contexts/AppContext';
 import { App } from '@/types/app';
-import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Server, HardDrive, Activity } from 'lucide-react';
+import { Server, HardDrive, Activity, TrendingUp, Zap } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
 const Dashboard = () => {
@@ -45,144 +43,173 @@ const Dashboard = () => {
   const stoppedApps = apps.filter(a => a.status === 'stopped' || a.status === 'installed');
 
   return (
-    <div className="min-h-screen bg-background">
-      <Navbar />
-      
+    <div className="min-h-full">
       <div className="container py-8">
-        <div className="mb-8">
-          <h1 className="mb-2 text-3xl font-bold text-foreground">Dashboard</h1>
-          <p className="text-muted-foreground">Gérez vos applications installées</p>
+        {/* Hero Header */}
+        <div className="mb-12 relative">
+          <div className="absolute inset-0 bg-gradient-to-r from-primary/10 via-accent/10 to-primary/10 blur-3xl -z-10 rounded-3xl" />
+          <div className="glass-card p-8 rounded-3xl depth-3">
+            <h1 className="mb-3 text-5xl font-bold text-gradient animate-gradient-shift">
+              Dashboard
+            </h1>
+            <p className="text-muted-foreground text-lg">
+              Gérez et surveillez vos applications installées en temps réel
+            </p>
+          </div>
         </div>
 
-        {/* Stats */}
-        <div className="mb-8 grid gap-4 md:grid-cols-3">
-          <Card>
+        {/* Stats Grid with enhanced styling */}
+        <div className="mb-8 grid gap-6 md:grid-cols-3">
+          <Card className="hover-lift group">
+            <div className="absolute inset-0 bg-gradient-to-br from-blue-500/10 to-cyan-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-2xl" />
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Applications installées</CardTitle>
-              <Server className="h-4 w-4 text-muted-foreground" />
+              <CardTitle className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">Applications installées</CardTitle>
+              <div className="p-2 rounded-xl bg-gradient-to-br from-blue-500 to-cyan-500 shadow-lg">
+                <Server className="h-5 w-5 text-white" />
+              </div>
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{installedApps.length}</div>
-              <p className="text-xs text-muted-foreground">
+              <div className="text-4xl font-bold bg-gradient-to-r from-foreground to-foreground/70 bg-clip-text text-transparent">{installedApps.length}</div>
+              <p className="text-sm text-muted-foreground mt-2 font-medium">
                 {runningApps.length} en cours d'exécution
               </p>
             </CardContent>
           </Card>
 
-          <Card>
+          <Card className="hover-lift group">
+            <div className="absolute inset-0 bg-gradient-to-br from-green-500/10 to-emerald-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-2xl" />
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Statut système</CardTitle>
-              <Activity className="h-4 w-4 text-muted-foreground" />
+              <CardTitle className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">Statut système</CardTitle>
+              <div className="p-2 rounded-xl bg-gradient-to-br from-green-500 to-emerald-500 shadow-lg">
+                <Activity className="h-5 w-5 text-white" />
+              </div>
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-green-600">Opérationnel</div>
-              <p className="text-xs text-muted-foreground">
+              <div className="text-3xl font-bold bg-gradient-to-r from-green-600 to-emerald-600 bg-clip-text text-transparent">Opérationnel</div>
+              <p className="text-sm text-muted-foreground mt-2 font-medium">
                 Tous les services fonctionnent
               </p>
             </CardContent>
           </Card>
 
-          <Card>
+          <Card className="hover-lift group">
+            <div className="absolute inset-0 bg-gradient-to-br from-purple-500/10 to-pink-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-2xl" />
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Stockage</CardTitle>
-              <HardDrive className="h-4 w-4 text-muted-foreground" />
+              <CardTitle className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">Ressources</CardTitle>
+              <div className="p-2 rounded-xl bg-gradient-to-br from-purple-500 to-pink-500 shadow-lg">
+                <HardDrive className="h-5 w-5 text-white" />
+              </div>
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">125 GB</div>
-              <p className="text-xs text-muted-foreground">
-                / 500 GB disponibles
+              <div className="text-4xl font-bold bg-gradient-to-r from-foreground to-foreground/70 bg-clip-text text-transparent">42%</div>
+              <p className="text-sm text-muted-foreground mt-2 font-medium">
+                Utilisation du disque
               </p>
             </CardContent>
           </Card>
         </div>
 
-        {/* Apps Tabs */}
-        <Tabs defaultValue="all" className="space-y-4">
-          <TabsList>
-            <TabsTrigger value="all">
-              Toutes ({installedApps.length})
-            </TabsTrigger>
-            <TabsTrigger value="running">
-              En cours ({runningApps.length})
-            </TabsTrigger>
-            <TabsTrigger value="stopped">
-              Arrêtées ({stoppedApps.length})
-            </TabsTrigger>
-          </TabsList>
+        {/* Apps Management with enhanced tabs */}
+        <Tabs defaultValue="all" className="space-y-6">
+          <div className="glass-card p-2 rounded-2xl depth-2">
+            <TabsList className="flex w-full gap-2 bg-transparent">
+              <TabsTrigger 
+                value="all"
+                className="flex-1 data-[state=active]:bg-gradient-to-r data-[state=active]:from-primary data-[state=active]:to-accent data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=active]:shadow-primary/50 rounded-xl transition-all duration-300"
+              >
+                <Server className="mr-2 h-4 w-4" />
+                Toutes ({installedApps.length})
+              </TabsTrigger>
+              <TabsTrigger 
+                value="running"
+                className="flex-1 data-[state=active]:bg-gradient-to-r data-[state=active]:from-green-500 data-[state=active]:to-emerald-500 data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=active]:shadow-green-500/50 rounded-xl transition-all duration-300"
+              >
+                <Zap className="mr-2 h-4 w-4" />
+                En cours ({runningApps.length})
+              </TabsTrigger>
+              <TabsTrigger 
+                value="stopped"
+                className="flex-1 data-[state=active]:bg-gradient-to-r data-[state=active]:from-orange-500 data-[state=active]:to-red-500 data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=active]:shadow-orange-500/50 rounded-xl transition-all duration-300"
+              >
+                <Activity className="mr-2 h-4 w-4" />
+                Arrêtées ({stoppedApps.length})
+              </TabsTrigger>
+            </TabsList>
+          </div>
 
-          <TabsContent value="all" className="space-y-4">
+          <TabsContent value="all" className="space-y-4 animate-fade-in">
             {installedApps.length === 0 ? (
-              <Card>
+              <Card className="glass-card hover-lift">
                 <CardHeader>
                   <CardTitle>Aucune application installée</CardTitle>
                   <CardDescription>
-                    Visitez le catalogue pour installer vos premières applications
+                    Rendez-vous dans le catalogue pour installer vos premières applications
                   </CardDescription>
                 </CardHeader>
-                <CardContent>
-                  <Button asChild>
-                    <a href="/catalog">Voir le catalogue</a>
-                  </Button>
-                </CardContent>
               </Card>
             ) : (
-              <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-                {installedApps.map(app => (
-                  <AppCard
-                    key={app.id}
-                    app={app}
-                    onStart={handleStart}
-                    onStop={handleStop}
-                    onUninstall={handleUninstall}
-                  />
+              <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+                {installedApps.map((app, index) => (
+                  <div key={app.id} className="animate-scale-in" style={{ animationDelay: `${index * 0.05}s` }}>
+                    <AppCard
+                      app={app}
+                      onStart={handleStart}
+                      onStop={handleStop}
+                      onUninstall={handleUninstall}
+                    />
+                  </div>
                 ))}
               </div>
             )}
           </TabsContent>
 
-          <TabsContent value="running" className="space-y-4">
+          <TabsContent value="running" className="space-y-4 animate-fade-in">
             {runningApps.length === 0 ? (
-              <Card>
+              <Card className="glass-card hover-lift">
                 <CardHeader>
-                  <CardTitle>Aucune application en cours</CardTitle>
+                  <CardTitle>Aucune application en cours d'exécution</CardTitle>
                   <CardDescription>
-                    Démarrez une application pour la voir ici
+                    Démarrez une application depuis l'onglet "Toutes"
                   </CardDescription>
                 </CardHeader>
               </Card>
             ) : (
-              <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-                {runningApps.map(app => (
-                  <AppCard
-                    key={app.id}
-                    app={app}
-                    onStop={handleStop}
-                    onUninstall={handleUninstall}
-                  />
+              <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+                {runningApps.map((app, index) => (
+                  <div key={app.id} className="animate-scale-in" style={{ animationDelay: `${index * 0.05}s` }}>
+                    <AppCard
+                      app={app}
+                      onStart={handleStart}
+                      onStop={handleStop}
+                      onUninstall={handleUninstall}
+                    />
+                  </div>
                 ))}
               </div>
             )}
           </TabsContent>
 
-          <TabsContent value="stopped" className="space-y-4">
+          <TabsContent value="stopped" className="space-y-4 animate-fade-in">
             {stoppedApps.length === 0 ? (
-              <Card>
+              <Card className="glass-card hover-lift">
                 <CardHeader>
                   <CardTitle>Aucune application arrêtée</CardTitle>
                   <CardDescription>
-                    Les applications arrêtées apparaîtront ici
+                    Toutes vos applications sont en cours d'exécution
                   </CardDescription>
                 </CardHeader>
               </Card>
             ) : (
-              <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-                {stoppedApps.map(app => (
-                  <AppCard
-                    key={app.id}
-                    app={app}
-                    onStart={handleStart}
-                    onUninstall={handleUninstall}
-                  />
+              <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+                {stoppedApps.map((app, index) => (
+                  <div key={app.id} className="animate-scale-in" style={{ animationDelay: `${index * 0.05}s` }}>
+                    <AppCard
+                      app={app}
+                      onStart={handleStart}
+                      onStop={handleStop}
+                      onUninstall={handleUninstall}
+                    />
+                  </div>
                 ))}
               </div>
             )}
