@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { CatalogAppCard } from '@/components/CatalogAppCard';
 import { InstallDialog } from '@/components/InstallDialog';
 import { useAppContext } from '@/contexts/AppContext';
+import { useDebounce } from '@/hooks/useDebounce';
 import { APP_CATEGORIES } from '@/types/app';
 import { App, AppCategory } from '@/types/app';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -12,6 +13,7 @@ import { useToast } from '@/hooks/use-toast';
 const AppCatalog = () => {
   const { apps, updateAppStatus, addLog } = useAppContext();
   const [searchQuery, setSearchQuery] = useState('');
+  const debouncedSearchQuery = useDebounce(searchQuery, 300);
   const [selectedApp, setSelectedApp] = useState<App | null>(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const { toast } = useToast();
@@ -41,10 +43,10 @@ const AppCatalog = () => {
     if (category) {
       filtered = filtered.filter(app => app.category === category);
     }
-    if (searchQuery) {
+    if (debouncedSearchQuery) {
       filtered = filtered.filter(app =>
-        app.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        app.description.toLowerCase().includes(searchQuery.toLowerCase())
+        app.name.toLowerCase().includes(debouncedSearchQuery.toLowerCase()) ||
+        app.description.toLowerCase().includes(debouncedSearchQuery.toLowerCase())
       );
     }
     return filtered;
