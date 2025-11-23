@@ -1,10 +1,11 @@
-import { useState, useEffect } from 'react';
+import { useState, useMemo } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
-import { supabase } from '@/integrations/supabase/client';
+import { useRepositories } from '@/hooks/useRepositories';
+import { validateGitHubRawUrl, validateRepositoryName, sanitizeString } from '@/lib/validation';
 import { toast } from 'sonner';
 import { 
   GitBranch, 
@@ -37,122 +38,66 @@ import {
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
 
-interface Repository {
-  id: string;
-  name: string;
-  description: string | null;
-  url: string;
-  type: string;
-  is_official: boolean;
-  is_enabled: boolean;
-  sync_status: string;
-  sync_error: string | null;
-  last_synced_at: string | null;
-}
-
 export const RepositoryManager = () => {
-  const [repositories, setRepositories] = useState<Repository[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [syncing, setSyncing] = useState<string | null>(null);
+  const { repositories, loading, syncing, addRepository, syncRepository, deleteRepository } = useRepositories();
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [newRepo, setNewRepo] = useState({
     name: '',
     description: '',
     url: '',
   });
+  const [validationErrors, setValidationErrors] = useState<{
+    name?: string;
+    url?: string;
+  }>({});
 
-  useEffect(() => {
-    fetchRepositories();
-  }, []);
-
-  const fetchRepositories = async () => {
-    try {
-      const { data, error } = await supabase
-        .from('repositories')
-        .select('*')
-        .order('is_official', { ascending: false })
-        .order('created_at', { ascending: false });
-
-      if (error) throw error;
-      setRepositories(data || []);
-    } catch (error: any) {
-      console.error('Error fetching repositories:', error);
-      toast.error('Erreur lors du chargement des dépôts');
-    } finally {
-      setLoading(false);
+  const validateForm = useMemo(() => {
+    const errors: { name?: string; url?: string } = {};
+    
+    if (newRepo.name && !validateRepositoryName(newRepo.name)) {
+      errors.name = 'Le nom doit contenir entre 3 et 100 caractères';
     }
-  };
+    
+    if (newRepo.url && !validateGitHubRawUrl(newRepo.url)) {
+      errors.url = 'URL invalide. Utilisez une URL GitHub raw (raw.githubusercontent.com)';
+    }
+    
+    return errors;
+  }, [newRepo.name, newRepo.url]);
 
   const handleAddRepository = async () => {
+    // Validate inputs
+    const errors = validateForm;
+    if (Object.keys(errors).length > 0) {
+      setValidationErrors(errors);
+      toast.error('Veuillez corriger les erreurs');
+      return;
+    }
+
     if (!newRepo.name || !newRepo.url) {
       toast.error('Le nom et l\'URL sont requis');
       return;
     }
 
-    try {
-      const { data: { user } } = await supabase.auth.getUser();
-      
-      const { error } = await supabase
-        .from('repositories')
-        .insert({
-          name: newRepo.name,
-          description: newRepo.description || null,
-          url: newRepo.url,
-          type: 'github',
-          added_by: user?.id,
-        });
+    const result = await addRepository(
+      sanitizeString(newRepo.name),
+      sanitizeString(newRepo.description),
+      newRepo.url.trim()
+    );
 
-      if (error) throw error;
-
-      toast.success('Dépôt ajouté avec succès');
+    if (result.success) {
       setIsDialogOpen(false);
       setNewRepo({ name: '', description: '', url: '' });
-      fetchRepositories();
-    } catch (error: any) {
-      console.error('Error adding repository:', error);
-      toast.error('Erreur lors de l\'ajout du dépôt');
+      setValidationErrors({});
     }
   };
 
   const handleSyncRepository = async (repoId: string) => {
-    setSyncing(repoId);
-    try {
-      const { data, error } = await supabase.functions.invoke('sync-repository', {
-        body: { repositoryId: repoId }
-      });
-
-      if (error) throw error;
-
-      if (data.success) {
-        toast.success(data.message || 'Synchronisation réussie');
-      } else {
-        toast.error(data.error || 'Erreur lors de la synchronisation');
-      }
-      
-      await fetchRepositories();
-    } catch (error: any) {
-      console.error('Error syncing repository:', error);
-      toast.error('Erreur lors de la synchronisation');
-    } finally {
-      setSyncing(null);
-    }
+    await syncRepository(repoId);
   };
 
   const handleDeleteRepository = async (repoId: string) => {
-    try {
-      const { error } = await supabase
-        .from('repositories')
-        .delete()
-        .eq('id', repoId);
-
-      if (error) throw error;
-
-      toast.success('Dépôt supprimé');
-      fetchRepositories();
-    } catch (error: any) {
-      console.error('Error deleting repository:', error);
-      toast.error('Erreur lors de la suppression');
-    }
+    await deleteRepository(repoId);
   };
 
   const getStatusIcon = (status: string) => {
@@ -222,11 +167,18 @@ export const RepositoryManager = () => {
                     id="name"
                     placeholder="Mon Catalogue"
                     value={newRepo.name}
-                    onChange={(e) => setNewRepo(prev => ({ ...prev, name: e.target.value }))}
+                    onChange={(e) => {
+                      setNewRepo(prev => ({ ...prev, name: e.target.value }));
+                      setValidationErrors(prev => ({ ...prev, name: undefined }));
+                    }}
+                    className={validationErrors.name ? 'border-red-500' : ''}
                   />
+                  {validationErrors.name && (
+                    <p className="text-xs text-red-500">{validationErrors.name}</p>
+                  )}
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="description">Description</Label>
+                  <Label htmlFor="description">Description (optionnel)</Label>
                   <Input
                     id="description"
                     placeholder="Description du catalogue"
@@ -240,10 +192,17 @@ export const RepositoryManager = () => {
                     id="url"
                     placeholder="https://raw.githubusercontent.com/user/repo/main/manifest.json"
                     value={newRepo.url}
-                    onChange={(e) => setNewRepo(prev => ({ ...prev, url: e.target.value }))}
+                    onChange={(e) => {
+                      setNewRepo(prev => ({ ...prev, url: e.target.value }));
+                      setValidationErrors(prev => ({ ...prev, url: undefined }));
+                    }}
+                    className={validationErrors.url ? 'border-red-500' : ''}
                   />
+                  {validationErrors.url && (
+                    <p className="text-xs text-red-500">{validationErrors.url}</p>
+                  )}
                   <p className="text-xs text-muted-foreground">
-                    URL directe vers le fichier JSON du manifest
+                    URL directe vers le fichier JSON du manifest GitHub (raw.githubusercontent.com)
                   </p>
                 </div>
               </div>

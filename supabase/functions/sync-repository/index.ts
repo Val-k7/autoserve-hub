@@ -78,21 +78,48 @@ serve(async (req) => {
       })
       .eq('id', repositoryId);
 
+    // Validate repository URL
+    if (!repository.url.startsWith('https://raw.githubusercontent.com/')) {
+      const error = 'URL invalide. Utilisez une URL GitHub raw (raw.githubusercontent.com)';
+      await supabase
+        .from('repositories')
+        .update({ 
+          sync_status: 'error',
+          sync_error: error
+        })
+        .eq('id', repositoryId);
+      throw new Error(error);
+    }
+
     // Fetch manifest from repository
     let apps: AppManifest[] = [];
     
     try {
       if (repository.type === 'github') {
-        // Handle GitHub repository
+        console.log(`Fetching from URL: ${repository.url}`);
+        
+        // Handle GitHub repository with better error handling
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 10000); // 10s timeout
+        
         const response = await fetch(repository.url, {
           headers: {
             'Accept': 'application/json',
-            'User-Agent': 'AutoServe-Sync'
-          }
+            'User-Agent': 'AutoServe-Sync/1.0',
+            'Cache-Control': 'no-cache'
+          },
+          signal: controller.signal
         });
 
+        clearTimeout(timeoutId);
+
         if (!response.ok) {
-          throw new Error(`Failed to fetch repository: ${response.statusText}`);
+          throw new Error(`HTTP ${response.status}: ${response.statusText}. Vérifiez que l'URL est correcte et accessible publiquement.`);
+        }
+
+        const contentType = response.headers.get('content-type');
+        if (!contentType?.includes('application/json')) {
+          throw new Error(`Type de contenu invalide: ${contentType}. Le fichier doit être un JSON valide.`);
         }
 
         const data = await response.json();
@@ -102,17 +129,27 @@ serve(async (req) => {
           apps = data;
         } else if (data.apps && Array.isArray(data.apps)) {
           apps = data.apps;
-        } else {
+        } else if (data.id && data.name) {
           apps = [data];
+        } else {
+          throw new Error('Format de manifest invalide. Le JSON doit contenir un tableau d\'apps ou un objet app avec id et name.');
         }
+
+        console.log(`Successfully parsed ${apps.length} apps from manifest`);
       }
     } catch (fetchError: any) {
       console.error('Error fetching repository:', fetchError);
+      
+      let errorMessage = fetchError.message;
+      if (fetchError.name === 'AbortError') {
+        errorMessage = 'Timeout: Le serveur met trop de temps à répondre';
+      }
+      
       await supabase
         .from('repositories')
         .update({ 
           sync_status: 'error',
-          sync_error: `Failed to fetch: ${fetchError.message}`
+          sync_error: errorMessage
         })
         .eq('id', repositoryId);
       
