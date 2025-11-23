@@ -5,6 +5,7 @@ import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { ThemeSwitcher } from '@/components/features/ThemeSwitcher';
 import { AccessibilitySettings } from '@/components/features/AccessibilitySettings';
+import { RepositoryManager } from '@/components/features/RepositoryManager';
 import { useToast } from '@/hooks/use-toast';
 import { Save, FolderOpen, Globe, Lock } from 'lucide-react';
 
@@ -47,6 +48,9 @@ const Settings = () => {
         </div>
 
         <div className="space-y-6">
+          {/* Repository Manager */}
+          <RepositoryManager />
+
           {/* Chemins d'installation */}
           <Card className="glass-card hover:shadow-2xl transition-all duration-500 border-primary/20 animate-scale-in hover-lift">
             <CardHeader className="bg-gradient-to-r from-primary/5 to-accent/5 rounded-t-2xl">
