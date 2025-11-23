@@ -18,6 +18,7 @@ import {
   Activity,
   AlertCircle,
   CheckCircle2,
+  BookOpen,
 } from "lucide-react";
 import {
   Sidebar,
@@ -43,6 +44,7 @@ const mainItems = [
   { title: "Dashboard", url: "/dashboard", icon: LayoutDashboard },
   { title: "Catalogue", url: "/catalog", icon: Store },
   { title: "Logs", url: "/logs", icon: ScrollText },
+  { title: "Documentation", url: "/documentation", icon: BookOpen },
 ];
 
 const adminItems = [
