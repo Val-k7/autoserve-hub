@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Navbar } from '@/components/Navbar';
-import { AppCard } from '@/components/AppCard';
+import { CatalogAppCard } from '@/components/CatalogAppCard';
+import { InstallDialog } from '@/components/InstallDialog';
 import { AVAILABLE_APPS } from '@/data/apps';
 import { APP_CATEGORIES } from '@/types/app';
 import { App, AppCategory, AppStatus } from '@/types/app';
@@ -12,47 +13,29 @@ import { useToast } from '@/hooks/use-toast';
 const AppCatalog = () => {
   const [apps, setApps] = useState<App[]>(AVAILABLE_APPS);
   const [searchQuery, setSearchQuery] = useState('');
+  const [selectedApp, setSelectedApp] = useState<App | null>(null);
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
   const { toast } = useToast();
 
-  const handleInstall = (app: App) => {
+  const handleInstallClick = (app: App) => {
+    setSelectedApp(app);
+    setIsDialogOpen(true);
+  };
+
+  const handleInstallConfirm = (config: Record<string, string>) => {
+    if (!selectedApp) return;
+
     setApps(apps.map(a => 
-      a.id === app.id ? { ...a, status: 'installed' as AppStatus, version: '1.0.0' } : a
+      a.id === selectedApp.id ? { ...a, status: 'installed' as AppStatus, version: '1.0.0' } : a
     ));
+    
     toast({
       title: 'Installation réussie',
-      description: `${app.name} a été installé avec succès`,
+      description: `${selectedApp.name} a été installé et ajouté au dashboard`,
     });
-  };
-
-  const handleStart = (app: App) => {
-    setApps(apps.map(a => 
-      a.id === app.id ? { ...a, status: 'running' as AppStatus, url: `https://${app.id}.localhost:9443` } : a
-    ));
-    toast({
-      title: 'Application démarrée',
-      description: `${app.name} est maintenant en cours d'exécution`,
-    });
-  };
-
-  const handleStop = (app: App) => {
-    setApps(apps.map(a => 
-      a.id === app.id ? { ...a, status: 'stopped' as AppStatus, url: undefined } : a
-    ));
-    toast({
-      title: 'Application arrêtée',
-      description: `${app.name} a été arrêté`,
-    });
-  };
-
-  const handleUninstall = (app: App) => {
-    setApps(apps.map(a => 
-      a.id === app.id ? { ...a, status: 'not_installed' as AppStatus, url: undefined, version: undefined } : a
-    ));
-    toast({
-      title: 'Désinstallation réussie',
-      description: `${app.name} a été désinstallé`,
-      variant: 'destructive',
-    });
+    
+    setIsDialogOpen(false);
+    setSelectedApp(null);
   };
 
   const filterApps = (category?: AppCategory) => {
@@ -110,13 +93,10 @@ const AppCatalog = () => {
           <TabsContent value="all" className="space-y-4">
             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
               {filterApps().map(app => (
-                <AppCard
+                <CatalogAppCard
                   key={app.id}
                   app={app}
-                  onInstall={handleInstall}
-                  onStart={handleStart}
-                  onStop={handleStop}
-                  onUninstall={handleUninstall}
+                  onInstallClick={handleInstallClick}
                 />
               ))}
             </div>
@@ -126,19 +106,26 @@ const AppCatalog = () => {
             <TabsContent key={category} value={category} className="space-y-4">
               <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
                 {filterApps(category).map(app => (
-                  <AppCard
+                  <CatalogAppCard
                     key={app.id}
                     app={app}
-                    onInstall={handleInstall}
-                    onStart={handleStart}
-                    onStop={handleStop}
-                    onUninstall={handleUninstall}
+                    onInstallClick={handleInstallClick}
                   />
                 ))}
               </div>
             </TabsContent>
           ))}
         </Tabs>
+
+        <InstallDialog
+          app={selectedApp}
+          open={isDialogOpen}
+          onClose={() => {
+            setIsDialogOpen(false);
+            setSelectedApp(null);
+          }}
+          onConfirm={handleInstallConfirm}
+        />
       </div>
     </div>
   );
